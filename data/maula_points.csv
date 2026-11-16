@@ -1,0 +1,39 @@
+point,lat_dms,lon_dms,note
+A1,17°46'25.856"N,78°38'47.582"E,
+A2,17°46'25.772"N,78°38'48.042"E,
+A3,17°46'25.549"N,78°38'48.301"E,
+A4,17°46'25.144"N,78°38'48.908"E,
+A5,17°46'24.41"N,78°38'49.474"E,Latitude seconds has 2 decimal places on map
+A6,17°46'23.698"N,78°38'49.892"E,
+A7,17°46'23.291"N,78°38'50.788"E,
+A8,17°46'22.422"N,78°38'52.518"E,
+A9,17°46'21.905"N,78°38'53.316"E,
+A10,17°46'21.15"N,78°38'53.303"E,Latitude seconds has 2 decimal places on map
+A11,17°46'20.046"N,78°38'54.798"E,
+A12,17°46'19.472"N,78°38'55.062"E,
+A13,17°46'18.971"N,78°38'55.773"E,
+A14,17°46'18.696"N,78°38'56.948"E,
+A15,17°46'19.012"N,78°38'57.17"E,Longitude seconds has 2 decimal places on map
+A16,17°46'18.702"N,78°38'57.938"E,
+A17,17°46'19.302"N,78°38'57.867"E,
+A18,17°46'19.83"N,78°38'58.488"E,Latitude seconds has 2 decimal places on map
+A19,17°46'20.278"N,78°38'59.016"E,
+A20,17°46'19.842"N,78°38'59.716"E,
+A21,17°46'19.557"N,78°39'0.587"E,Longitude seconds written with single-digit whole seconds (0.587"E)
+A22,17°46'18.608"N,78°39'0.788"E,Longitude seconds written with single-digit whole seconds (0.788"E)
+A23,17°46'17.503"N,78°39'0.847"E,Longitude seconds written with single-digit whole seconds (0.847"E)
+A24,17°46'16.855"N,78°39'1.607"E,Longitude seconds written with single-digit whole seconds (1.607"E)
+A25,17°46'16.333"N,78°39'2.452"E,Longitude seconds written with single-digit whole seconds (2.452"E)
+A26,17°46'16.896"N,78°39'3.125"E,Longitude seconds written with single-digit whole seconds (3.125"E)
+A27,17°46'17.691"N,78°39'3.093"E,Longitude seconds written with single-digit whole seconds (3.093"E)
+A28,17°46'18.318"N,78°39'3.115"E,Longitude seconds written with single-digit whole seconds (3.115"E)
+A29,17°46'19.003"N,78°39'2.943"E,Longitude seconds written with single-digit whole seconds (2.943"E)
+A30,17°46'20.225"N,78°39'2.939"E,Longitude seconds written with single-digit whole seconds (2.939"E)
+A31,17°46'21.052"N,78°39'3.282"E,Longitude seconds written with single-digit whole seconds (3.282"E)
+A32,17°46'21.992"N,78°39'3.364"E,Longitude seconds written with single-digit whole seconds (3.364"E)
+A33,17°46'22.72"N,78°39'3.363"E,Latitude seconds has 2 decimal places on map; longitude has single-digit whole seconds
+A34,17°46'23.559"N,78°39'3.155"E,Longitude seconds written with single-digit whole seconds (3.155"E)
+A35,17°46'24.367"N,78°39'3.332"E,Longitude seconds written with single-digit whole seconds (3.332"E)
+A36,17°46'24.839"N,78°39'2.697"E,Longitude seconds written with single-digit whole seconds (2.697"E)
+A37,17°46'25.163"N,78°39'2.815"E,Longitude seconds written with single-digit whole seconds (2.815"E)
+
