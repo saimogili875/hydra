@@ -224,8 +224,8 @@
     </div>
     <div style="display: flex; gap: 10px; align-items: center;">
       <span class="status-badge">37 GIS Points Active</span>
-      <a href="/data/maula_points.csv" download class="btn">Points CSV</a>
-      <a href="/data/maula_facts.json" download class="btn">Facts JSON</a>
+      <a href="/data/871_points.csv" download class="btn">Points CSV</a>
+      <a href="/data/871_facts.json" download class="btn">Facts JSON</a>
     </div>
   </header>
 
@@ -311,6 +311,10 @@
     </div>
   </div>
 
+  <footer style="background: var(--card-bg); border-top: 1px solid var(--card-border); padding: 6px 16px; text-align: center; font-size: 0.75rem; color: var(--text-muted); flex-shrink: 0;">
+    Student project. Not a legal boundary.
+  </footer>
+
   <script>
     // Tab switching
     function switchView(mode) {
@@ -382,7 +386,7 @@
     const latlngs = [];
 
     // Load CSV Points and plot on GIS map
-    fetch('/data/maula_points.csv')
+    fetch('/data/871_points.csv')
       .then(res => res.text())
       .then(csv => {
         const lines = csv.trim().split('\n').slice(1);
