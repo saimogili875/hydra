@@ -7,7 +7,7 @@ a transparent PNG for GIS satellite overlays.
 
 import os
 import json
-from typing import Tuple, Dict, Any
+from typing import Tuple, Dict, Any, Optional
 import pymupdf  # PyMuPDF
 from PIL import Image
 import numpy as np
@@ -95,14 +95,16 @@ def make_transparent(image: Image.Image, threshold: int = 240) -> Image.Image:
 def process_drawing(
     pdf_path: str = "data/871Yelameru_Kunta_FTL.pdf",
     output_dir: str = "outputs",
+    crop_json_path: Optional[str] = None,
     dpi: int = 300
 ) -> Dict[str, Any]:
     """
     Full pipeline for Step 1:
       1. Renders PDF page 1 to outputs/drawing_full.png at 300 DPI.
-      2. Crops drawing area and blanks out table.
-      3. Makes background transparent and saves to outputs/drawing_transparent.png.
-      4. Saves crop metadata to outputs/drawing_crop.json.
+      2. Reads crop box from crop_json_path if provided, otherwise uses default.
+      3. Crops drawing area and blanks out table.
+      4. Makes background transparent and saves to outputs/drawing_transparent.png.
+      5. Saves crop metadata to outputs/drawing_crop.json.
     """
     os.makedirs(output_dir, exist_ok=True)
 
@@ -114,6 +116,21 @@ def process_drawing(
     # Crop box in original 300 DPI pixels: (x, y, x2, y2)
     crop_x, crop_y = 400, 50
     crop_x2, crop_y2 = 3780, 2460
+    table_mask = (0, 1190, 1015)
+
+    if crop_json_path and os.path.exists(crop_json_path):
+        with open(crop_json_path, "r", encoding="utf-8") as f:
+            cfg = json.load(f)
+            if "crop_box" in cfg:
+                crop_x, crop_y, crop_x2, crop_y2 = cfg["crop_box"]
+            elif "x" in cfg and "width" in cfg:
+                crop_x = cfg["x"]
+                crop_y = cfg["y"]
+                crop_x2 = crop_x + cfg["width"]
+                crop_y2 = crop_y + cfg["height"]
+            if "table_mask_box" in cfg:
+                table_mask = tuple(cfg["table_mask_box"])
+
     crop_w = crop_x2 - crop_x
     crop_h = crop_y2 - crop_y
 
@@ -121,7 +138,7 @@ def process_drawing(
     cleaned_img = crop_and_clean_drawing(
         full_img,
         crop_box=(crop_x, crop_y, crop_x2, crop_y2),
-        table_mask_box=(0, 1190, 1015)
+        table_mask_box=table_mask
     )
 
     # 3. Make transparent

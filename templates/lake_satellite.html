@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Yelameru Kunta (Lake ID 871) - FTL & Buffer Satellite Map</title>
+  <title>__LAKE_NAME__ (Lake ID __LAKE_ID__) - FTL & Buffer Satellite Map</title>
 
   <!-- Google Maps API Config -->
   <script src="../config.js"></script>
@@ -16,9 +16,9 @@
     }
   </script>
 
-  <!-- Leaflet CSS & JS -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <!-- Leaflet CSS & JS with SRI Hashes -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
   <style>
     html, body {
       margin: 0;
@@ -431,12 +431,6 @@
     }
 
     /* Pin Marker & Popup Styling */
-    .leaflet-popup-pane {
-      z-index: 1005 !important;
-    }
-    .leaflet-popup {
-      z-index: 1005 !important;
-    }
     .pin-popup-card {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       color: #0f172a;
@@ -570,7 +564,7 @@
     <div class="basemap-switcher-title">Map Layers</div>
     <label class="layer-option">
       <input type="checkbox" id="chk-boundary" checked onchange="toggleMapLayer('boundary', this.checked)">
-      <span>Survey Boundary (A1–A37)</span>
+      <span>Survey Boundary</span>
     </label>
     <label class="layer-option">
       <input type="checkbox" id="chk-buffer" checked onchange="toggleMapLayer('buffer', this.checked)">
@@ -578,7 +572,7 @@
     </label>
     <label class="layer-option">
       <input type="checkbox" id="chk-bund" checked onchange="toggleMapLayer('bund', this.checked)">
-      <span>Bund Embankment (A37–A1)</span>
+      <span>Bund Embankment</span>
     </label>
     <label class="layer-option">
       <input type="checkbox" id="chk-points" checked onchange="toggleMapLayer('points', this.checked)">
@@ -592,15 +586,15 @@
 
   <!-- Top-Left Info Card -->
   <div class="info-card">
-    <h3>YELAMERU KUNTA</h3>
-    <div class="info-row"><span>Lake ID:</span> <strong>871</strong></div>
-    <div class="info-row"><span>Survey Area:</span> <strong>16.152 Acres</strong></div>
-    <div class="info-row"><span>Perimeter:</span> <strong>1411.706 m</strong></div>
-    <div class="info-row"><span>FTL Level:</span> <strong>+588.350m</strong></div>
-    <div class="info-row"><span>Survey Date:</span> <strong>20-08-2014</strong></div>
-    <div class="info-status">Verification: OK (Area diff: 2.94%)</div>
+    <h3>__LAKE_NAME__</h3>
+    <div class="info-row"><span>Lake ID:</span> <strong>__LAKE_ID__</strong></div>
+    <div class="info-row"><span>Survey Area:</span> <strong>__AREA_ACRES__ Acres</strong></div>
+    <div class="info-row"><span>Perimeter:</span> <strong>__PERIMETER_M__ m</strong></div>
+    <div class="info-row"><span>FTL Level:</span> <strong>__FTL_LEVEL_M__</strong></div>
+    <div class="info-row"><span>Survey Date:</span> <strong>__SURVEY_DATE__</strong></div>
+    <div class="info-status">Verification: __VERIFICATION_STATUS__ (Area diff: __DIFF_PERCENT__%)</div>
     <button type="button" class="btn-export" onclick="exportGeoJSON()">📥 Export GeoJSON (QGIS)</button>
-    <div class="info-footer">Student project. Not a legal boundary.<br>If satellite fails, toggle OpenStreetMap.</div>
+    <div class="info-footer">Student project. Not a legal boundary.<br>Default basemap: OpenStreetMap.</div>
   </div>
 
   <!-- Bottom-Left Legend Card -->
@@ -623,7 +617,7 @@
       <div class="legend-symbol bund-symbol"></div>
       <div class="legend-text">
         <strong>Bund Top Embankment</strong>
-        <span>(A37 – A1, no buffer)</span>
+        <span>(no buffer)</span>
       </div>
     </div>
   </div>
@@ -644,11 +638,11 @@
 
   <script>
     // 0. Embedded GeoJSON FeatureCollection
-    const lakeGeoJSON = {"type": "FeatureCollection", "name": "Yelameru_Kunta_871", "crs": {"type": "name", "properties": {"name": "urn:ogc:def:crs:OGC:1.3:CRS84"}}, "features": [{"type": "Feature", "geometry": {"type": "LineString", "coordinates": [[78.64655055555556, 17.77384888888889], [78.64667833333334, 17.773825555555554], [78.64675027777778, 17.77376361111111], [78.64691888888889, 17.77365111111111], [78.64707611111112, 17.77344722222222], [78.64719222222223, 17.773249444444442], [78.64744111111112, 17.773136388888886], [78.64792166666668, 17.772895], [78.64814333333334, 17.77275138888889], [78.64813972222223, 17.772541666666665], [78.648555, 17.772235], [78.64862833333333, 17.772075555555556], [78.64882583333333, 17.77193638888889], [78.64915222222223, 17.77186], [78.6492138888889, 17.771947777777775], [78.64942722222223, 17.771861666666666], [78.64940750000001, 17.77202833333333], [78.64958, 17.772175], [78.64972666666668, 17.772299444444442], [78.64992111111111, 17.772178333333333], [78.65016305555557, 17.772099166666667], [78.6502188888889, 17.771835555555555], [78.65023527777778, 17.771528611111112], [78.6504463888889, 17.77134861111111], [78.65068111111111, 17.771203611111112], [78.65086805555556, 17.771359999999998], [78.65085916666668, 17.77158083333333], [78.65086527777778, 17.771755], [78.6508175, 17.771945277777778], [78.6508163888889, 17.77228472222222], [78.65091166666667, 17.772514444444443], [78.65093444444445, 17.772775555555555], [78.65093416666667, 17.772977777777776], [78.65087638888889, 17.773210833333334], [78.65092555555556, 17.773435277777775], [78.65074916666667, 17.773566388888888], [78.65078194444445, 17.773656388888888]]}, "properties": {"layer": "boundary", "name": "Survey Boundary (A1 - A37)", "stroke": "#ff6b00", "stroke_width": 3.5}}, {"type": "Feature", "geometry": {"type": "LineString", "coordinates": [[78.65078194444445, 17.773656388888888], [78.64655055555556, 17.77384888888889]]}, "properties": {"layer": "bund", "name": "Bund Embankment (A37 - A1)", "stroke": "#8d5524", "stroke_width": 3.0, "dash": "dashed"}}, {"type": "Feature", "geometry": {"type": "Polygon", "coordinates": [[[78.64655055555556, 17.773848888888885], [78.64667833333334, 17.77382555555555], [78.64675027777778, 17.77376361111111], [78.6469188888889, 17.77365111111111], [78.64707611111112, 17.773447222222217], [78.64719222222223, 17.773249444444442], [78.64744111111112, 17.773136388888883], [78.64792166666668, 17.772894999999995], [78.64814333333334, 17.772751388888892], [78.64813972222223, 17.772541666666662], [78.648555, 17.772235], [78.64862833333333, 17.772075555555556], [78.64882583333333, 17.771936388888886], [78.64915222222223, 17.77185999999999], [78.64921388888891, 17.771947777777775], [78.64942722222223, 17.771861666666666], [78.64940750000002, 17.772028333333328], [78.64958, 17.772174999999997], [78.64972666666668, 17.772299444444442], [78.64992111111111, 17.772178333333336], [78.65016305555557, 17.77209916666667], [78.6502188888889, 17.771835555555555], [78.65023527777778, 17.77152861111111], [78.6504463888889, 17.771348611111108], [78.65068111111111, 17.771203611111115], [78.65086805555556, 17.771359999999998], [78.65085916666668, 17.771580833333335], [78.65086527777778, 17.771755], [78.6508175, 17.77194527777778], [78.6508163888889, 17.77228472222222], [78.65091166666667, 17.772514444444443], [78.65093444444445, 17.772775555555555], [78.65093416666667, 17.77297777777777], [78.65087638888889, 17.773210833333334], [78.65092555555556, 17.773435277777775], [78.65074916666667, 17.77356638888888], [78.65078194444445, 17.773656388888885], [78.65086205086735, 17.773629608482864], [78.65084936982016, 17.773594789390348], [78.65101948927447, 17.773468338286637], [78.65096332043716, 17.773211929756442], [78.6510189963563, 17.7729873519238], [78.65101929176889, 17.77277221790972], [78.65099516502515, 17.772495644546943], [78.6509012822578, 17.772269286086765], [78.65090231072536, 17.771955043687402], [78.6509504587983, 17.77176329082015], [78.6509440637457, 17.77158103427152], [78.6509543968995, 17.771324316829684], [78.65068880769869, 17.771102137500872], [78.6503948933311, 17.77128370359778], [78.65015235996037, 17.771490495134238], [78.65013448124675, 17.771825339452995], [78.65008958544134, 17.772037309807928], [78.64988371032189, 17.772104674197898], [78.64973456856407, 17.772197568249407], [78.64963628171384, 17.77211417334587], [78.6494967650497, 17.77199555055062], [78.64952785217693, 17.771732840994563], [78.64924528806985, 17.771846897030468], [78.64918956698897, 17.771767582338068], [78.6487892271484, 17.77186127896497], [78.64855982547539, 17.772022924847825], [78.64848608051474, 17.772183264173385], [78.6480541887289, 17.77250219947709], [78.64805774448224, 17.772708712104304], [78.6478780704201, 17.772825117440693], [78.64740322480357, 17.77306363815637], [78.64713149979883, 17.77318706679169], [78.64700474398724, 17.773402976117893], [78.64685894581069, 17.773592050008954], [78.64669747763664, 17.77369978410641], [78.6466392148417, 17.773749948597672], [78.64653467074488, 17.773769039257505], [78.64655055555556, 17.773848888888885]]]}, "properties": {"layer": "buffer", "name": "Buffer Zone (9m Hatched)", "stroke": "#00c853", "fill": "#39ff14", "fill_opacity": 0.35}}, {"type": "Feature", "geometry": {"type": "Point", "coordinates": [78.64655055555556, 17.77384888888889]}, "properties": {"layer": "point", "point": "A1", "lat": 17.77384888888889, "lon": 78.64655055555556}}, {"type": "Feature", "geometry": {"type": "Point", "coordinates": [78.64667833333334, 17.773825555555554]}, "properties": {"layer": "point", "point": "A2", "lat": 17.773825555555554, "lon": 78.64667833333334}}, {"type": "Feature", "geometry": {"type": "Point", "coordinates": [78.64675027777778, 17.77376361111111]}, "properties": {"layer": "point", "point": "A3", "lat": 17.77376361111111, "lon": 78.64675027777778}}, {"type": "Feature", "geometry": {"type": "Point", "coordinates": [78.64691888888889, 17.77365111111111]}, "properties": {"layer": "point", "point": "A4", "lat": 17.77365111111111, "lon": 78.64691888888889}}, {"type": "Feature", "geometry": {"type": "Point", "coordinates": [78.64707611111112, 17.77344722222222]}, "properties": {"layer": "point", "point": "A5", "lat": 17.77344722222222, "lon": 78.64707611111112}}, {"type": "Feature", "geometry": {"type": "Point", "coordinates": [78.64719222222223, 17.773249444444442]}, "properties": {"layer": "point", "point": "A6", "lat": 17.773249444444442, "lon": 78.64719222222223}}, {"type": "Feature", "geometry": {"type": "Point", "coordinates": [78.64744111111112, 17.773136388888886]}, "properties": {"layer": "point", "point": "A7", "lat": 17.773136388888886, "lon": 78.64744111111112}}, {"type": "Feature", "geometry": {"type": "Point", "coordinates": [78.64792166666668, 17.772895]}, "properties": {"layer": "point", "point": "A8", "lat": 17.772895, "lon": 78.64792166666668}}, {"type": "Feature", "geometry": {"type": "Point", "coordinates": [78.64814333333334, 17.77275138888889]}, "properties": {"layer": "point", "point": "A9", "lat": 17.77275138888889, "lon": 78.64814333333334}}, {"type": "Feature", "geometry": {"type": "Point", "coordinates": [78.64813972222223, 17.772541666666665]}, "properties": {"layer": "point", "point": "A10", "lat": 17.772541666666665, "lon": 78.64813972222223}}, {"type": "Feature", "geometry": {"type": "Point", "coordinates": [78.648555, 17.772235]}, "properties": {"layer": "point", "point": "A11", "lat": 17.772235, "lon": 78.648555}}, {"type": "Feature", "geometry": {"type": "Point", "coordinates": [78.64862833333333, 17.772075555555556]}, "properties": {"layer": "point", "point": "A12", "lat": 17.772075555555556, "lon": 78.64862833333333}}, {"type": "Feature", "geometry": {"type": "Point", "coordinates": [78.64882583333333, 17.77193638888889]}, "properties": {"layer": "point", "point": "A13", "lat": 17.77193638888889, "lon": 78.64882583333333}}, {"type": "Feature", "geometry": {"type": "Point", "coordinates": [78.64915222222223, 17.77186]}, "properties": {"layer": "point", "point": "A14", "lat": 17.77186, "lon": 78.64915222222223}}, {"type": "Feature", "geometry": {"type": "Point", "coordinates": [78.6492138888889, 17.771947777777775]}, "properties": {"layer": "point", "point": "A15", "lat": 17.771947777777775, "lon": 78.6492138888889}}, {"type": "Feature", "geometry": {"type": "Point", "coordinates": [78.64942722222223, 17.771861666666666]}, "properties": {"layer": "point", "point": "A16", "lat": 17.771861666666666, "lon": 78.64942722222223}}, {"type": "Feature", "geometry": {"type": "Point", "coordinates": [78.64940750000001, 17.77202833333333]}, "properties": {"layer": "point", "point": "A17", "lat": 17.77202833333333, "lon": 78.64940750000001}}, {"type": "Feature", "geometry": {"type": "Point", "coordinates": [78.64958, 17.772175]}, "properties": {"layer": "point", "point": "A18", "lat": 17.772175, "lon": 78.64958}}, {"type": "Feature", "geometry": {"type": "Point", "coordinates": [78.64972666666668, 17.772299444444442]}, "properties": {"layer": "point", "point": "A19", "lat": 17.772299444444442, "lon": 78.64972666666668}}, {"type": "Feature", "geometry": {"type": "Point", "coordinates": [78.64992111111111, 17.772178333333333]}, "properties": {"layer": "point", "point": "A20", "lat": 17.772178333333333, "lon": 78.64992111111111}}, {"type": "Feature", "geometry": {"type": "Point", "coordinates": [78.65016305555557, 17.772099166666667]}, "properties": {"layer": "point", "point": "A21", "lat": 17.772099166666667, "lon": 78.65016305555557}}, {"type": "Feature", "geometry": {"type": "Point", "coordinates": [78.6502188888889, 17.771835555555555]}, "properties": {"layer": "point", "point": "A22", "lat": 17.771835555555555, "lon": 78.6502188888889}}, {"type": "Feature", "geometry": {"type": "Point", "coordinates": [78.65023527777778, 17.771528611111112]}, "properties": {"layer": "point", "point": "A23", "lat": 17.771528611111112, "lon": 78.65023527777778}}, {"type": "Feature", "geometry": {"type": "Point", "coordinates": [78.6504463888889, 17.77134861111111]}, "properties": {"layer": "point", "point": "A24", "lat": 17.77134861111111, "lon": 78.6504463888889}}, {"type": "Feature", "geometry": {"type": "Point", "coordinates": [78.65068111111111, 17.771203611111112]}, "properties": {"layer": "point", "point": "A25", "lat": 17.771203611111112, "lon": 78.65068111111111}}, {"type": "Feature", "geometry": {"type": "Point", "coordinates": [78.65086805555556, 17.771359999999998]}, "properties": {"layer": "point", "point": "A26", "lat": 17.771359999999998, "lon": 78.65086805555556}}, {"type": "Feature", "geometry": {"type": "Point", "coordinates": [78.65085916666668, 17.77158083333333]}, "properties": {"layer": "point", "point": "A27", "lat": 17.77158083333333, "lon": 78.65085916666668}}, {"type": "Feature", "geometry": {"type": "Point", "coordinates": [78.65086527777778, 17.771755]}, "properties": {"layer": "point", "point": "A28", "lat": 17.771755, "lon": 78.65086527777778}}, {"type": "Feature", "geometry": {"type": "Point", "coordinates": [78.6508175, 17.771945277777778]}, "properties": {"layer": "point", "point": "A29", "lat": 17.771945277777778, "lon": 78.6508175}}, {"type": "Feature", "geometry": {"type": "Point", "coordinates": [78.6508163888889, 17.77228472222222]}, "properties": {"layer": "point", "point": "A30", "lat": 17.77228472222222, "lon": 78.6508163888889}}, {"type": "Feature", "geometry": {"type": "Point", "coordinates": [78.65091166666667, 17.772514444444443]}, "properties": {"layer": "point", "point": "A31", "lat": 17.772514444444443, "lon": 78.65091166666667}}, {"type": "Feature", "geometry": {"type": "Point", "coordinates": [78.65093444444445, 17.772775555555555]}, "properties": {"layer": "point", "point": "A32", "lat": 17.772775555555555, "lon": 78.65093444444445}}, {"type": "Feature", "geometry": {"type": "Point", "coordinates": [78.65093416666667, 17.772977777777776]}, "properties": {"layer": "point", "point": "A33", "lat": 17.772977777777776, "lon": 78.65093416666667}}, {"type": "Feature", "geometry": {"type": "Point", "coordinates": [78.65087638888889, 17.773210833333334]}, "properties": {"layer": "point", "point": "A34", "lat": 17.773210833333334, "lon": 78.65087638888889}}, {"type": "Feature", "geometry": {"type": "Point", "coordinates": [78.65092555555556, 17.773435277777775]}, "properties": {"layer": "point", "point": "A35", "lat": 17.773435277777775, "lon": 78.65092555555556}}, {"type": "Feature", "geometry": {"type": "Point", "coordinates": [78.65074916666667, 17.773566388888888]}, "properties": {"layer": "point", "point": "A36", "lat": 17.773566388888888, "lon": 78.65074916666667}}, {"type": "Feature", "geometry": {"type": "Point", "coordinates": [78.65078194444445, 17.773656388888888]}, "properties": {"layer": "point", "point": "A37", "lat": 17.773656388888888, "lon": 78.65078194444445}}]};
+    const lakeGeoJSON = __GEOJSON_DATA__;
 
     // 1. Initialize Leaflet Map
     const map = L.map('leaflet-map', {
-      center: [17.772507725225225, 78.64938741741742],
+      center: [__CENTER_LAT__, __CENTER_LON__],
       zoom: 17,
       maxZoom: 19
     });
@@ -665,7 +659,7 @@
     });
 
     // 3. Buffer Zone Polygon (9m Outward)
-    const bufferCoords = [[17.773848888888885, 78.64655055555556], [17.77382555555555, 78.64667833333334], [17.77376361111111, 78.64675027777778], [17.77365111111111, 78.6469188888889], [17.773447222222217, 78.64707611111112], [17.773249444444442, 78.64719222222223], [17.773136388888883, 78.64744111111112], [17.772894999999995, 78.64792166666668], [17.772751388888892, 78.64814333333334], [17.772541666666662, 78.64813972222223], [17.772235, 78.648555], [17.772075555555556, 78.64862833333333], [17.771936388888886, 78.64882583333333], [17.77185999999999, 78.64915222222223], [17.771947777777775, 78.64921388888891], [17.771861666666666, 78.64942722222223], [17.772028333333328, 78.64940750000002], [17.772174999999997, 78.64958], [17.772299444444442, 78.64972666666668], [17.772178333333336, 78.64992111111111], [17.77209916666667, 78.65016305555557], [17.771835555555555, 78.6502188888889], [17.77152861111111, 78.65023527777778], [17.771348611111108, 78.6504463888889], [17.771203611111115, 78.65068111111111], [17.771359999999998, 78.65086805555556], [17.771580833333335, 78.65085916666668], [17.771755, 78.65086527777778], [17.77194527777778, 78.6508175], [17.77228472222222, 78.6508163888889], [17.772514444444443, 78.65091166666667], [17.772775555555555, 78.65093444444445], [17.77297777777777, 78.65093416666667], [17.773210833333334, 78.65087638888889], [17.773435277777775, 78.65092555555556], [17.77356638888888, 78.65074916666667], [17.773656388888885, 78.65078194444445], [17.773629608482864, 78.65086205086735], [17.773594789390348, 78.65084936982016], [17.773468338286637, 78.65101948927447], [17.773211929756442, 78.65096332043716], [17.7729873519238, 78.6510189963563], [17.77277221790972, 78.65101929176889], [17.772495644546943, 78.65099516502515], [17.772269286086765, 78.6509012822578], [17.771955043687402, 78.65090231072536], [17.77176329082015, 78.6509504587983], [17.77158103427152, 78.6509440637457], [17.771324316829684, 78.6509543968995], [17.771102137500872, 78.65068880769869], [17.77128370359778, 78.6503948933311], [17.771490495134238, 78.65015235996037], [17.771825339452995, 78.65013448124675], [17.772037309807928, 78.65008958544134], [17.772104674197898, 78.64988371032189], [17.772197568249407, 78.64973456856407], [17.77211417334587, 78.64963628171384], [17.77199555055062, 78.6494967650497], [17.771732840994563, 78.64952785217693], [17.771846897030468, 78.64924528806985], [17.771767582338068, 78.64918956698897], [17.77186127896497, 78.6487892271484], [17.772022924847825, 78.64855982547539], [17.772183264173385, 78.64848608051474], [17.77250219947709, 78.6480541887289], [17.772708712104304, 78.64805774448224], [17.772825117440693, 78.6478780704201], [17.77306363815637, 78.64740322480357], [17.77318706679169, 78.64713149979883], [17.773402976117893, 78.64700474398724], [17.773592050008954, 78.64685894581069], [17.77369978410641, 78.64669747763664], [17.773749948597672, 78.6466392148417], [17.773769039257505, 78.64653467074488], [17.773848888888885, 78.64655055555556]];
+    const bufferCoords = __BUFFER_COORDS__;
     const bufferLayer = L.polygon(bufferCoords, {
       color: '#00c853',
       weight: 2,
@@ -681,27 +675,27 @@
       }
     });
 
-    // 4. Bund Embankment Line (A37 -> A1)
-    const bundCoords = [[17.773656388888888, 78.65078194444445], [17.77384888888889, 78.64655055555556]];
+    // 4. Bund Embankment Line
+    const bundCoords = __BUND_COORDS__;
     const bundLayer = L.polyline(bundCoords, {
       color: '#8d5524',
       weight: 3,
       dashArray: '8, 6',
       opacity: 0.95
     }).addTo(map);
-    bundLayer.bindPopup('<strong>Bund Embankment (Top of Bund)</strong><br>Connects A37 to A1 (Chord: 449.4 m)<br>No buffer applied.');
+    bundLayer.bindPopup('<strong>Bund Embankment (Top of Bund)</strong><br>Connects last point to first point.<br>No buffer applied.');
 
-    // 5. Survey Boundary Polyline (A1 -> ... -> A37)
-    const boundaryCoords = [[17.77384888888889, 78.64655055555556], [17.773825555555554, 78.64667833333334], [17.77376361111111, 78.64675027777778], [17.77365111111111, 78.64691888888889], [17.77344722222222, 78.64707611111112], [17.773249444444442, 78.64719222222223], [17.773136388888886, 78.64744111111112], [17.772895, 78.64792166666668], [17.77275138888889, 78.64814333333334], [17.772541666666665, 78.64813972222223], [17.772235, 78.648555], [17.772075555555556, 78.64862833333333], [17.77193638888889, 78.64882583333333], [17.77186, 78.64915222222223], [17.771947777777775, 78.6492138888889], [17.771861666666666, 78.64942722222223], [17.77202833333333, 78.64940750000001], [17.772175, 78.64958], [17.772299444444442, 78.64972666666668], [17.772178333333333, 78.64992111111111], [17.772099166666667, 78.65016305555557], [17.771835555555555, 78.6502188888889], [17.771528611111112, 78.65023527777778], [17.77134861111111, 78.6504463888889], [17.771203611111112, 78.65068111111111], [17.771359999999998, 78.65086805555556], [17.77158083333333, 78.65085916666668], [17.771755, 78.65086527777778], [17.771945277777778, 78.6508175], [17.77228472222222, 78.6508163888889], [17.772514444444443, 78.65091166666667], [17.772775555555555, 78.65093444444445], [17.772977777777776, 78.65093416666667], [17.773210833333334, 78.65087638888889], [17.773435277777775, 78.65092555555556], [17.773566388888888, 78.65074916666667], [17.773656388888888, 78.65078194444445]];
+    // 5. Survey Boundary Polyline
+    const boundaryCoords = __BOUNDARY_COORDS__;
     const boundaryLayer = L.polyline(boundaryCoords, {
       color: '#ff6b00',
       weight: 3.5,
       opacity: 1.0
     }).addTo(map);
-    boundaryLayer.bindPopup('<strong>Survey Boundary (A1 – A37)</strong><br>Path length: 943.5 m<br>FTL Level: +588.350m');
+    boundaryLayer.bindPopup('<strong>Survey Boundary</strong><br>FTL Level: __FTL_LEVEL_M__');
 
     // 6. Point Markers and Labels
-    const pointsData = [{"label": "A1", "lat": 17.77384888888889, "lon": 78.64655055555556, "lbl_lat": 17.773968700794136, "lbl_lon": 78.64642232468822}, {"label": "A2", "lat": 17.773825555555554, "lon": 78.64667833333334, "lbl_lat": 17.773768983855962, "lbl_lon": 78.6465498465493}, {"label": "A3", "lat": 17.77376361111111, "lon": 78.64675027777778, "lbl_lat": 17.77363620146303, "lbl_lon": 78.6466448796852}, {"label": "A4", "lat": 17.77365111111111, "lon": 78.64691888888889, "lbl_lat": 17.773534556471926, "lbl_lon": 78.64680059375797}, {"label": "A5", "lat": 17.77344722222222, "lon": 78.64707611111112, "lbl_lat": 17.77335889980833, "lbl_lon": 78.64693365080754}, {"label": "A6", "lat": 17.773249444444442, "lon": 78.64719222222223, "lbl_lat": 17.773130554312694, "lbl_lon": 78.6470764869613}, {"label": "A7", "lat": 17.773136388888886, "lon": 78.64744111111112, "lbl_lat": 17.77299091675357, "lbl_lon": 78.64736535380007}, {"label": "A8", "lat": 17.772895, "lon": 78.64792166666668, "lbl_lat": 17.772755452763686, "lbl_lon": 78.64783461013482}, {"label": "A9", "lat": 17.77275138888889, "lon": 78.64814333333334, "lbl_lat": 17.772676335465025, "lbl_lon": 78.64799281278104}, {"label": "A10", "lat": 17.772541666666665, "lon": 78.64813972222223, "lbl_lat": 17.77247112468894, "lbl_lon": 78.64798684337008}, {"label": "A11", "lat": 17.772235, "lon": 78.648555, "lbl_lat": 17.77213473326749, "lbl_lon": 78.64842143050134}, {"label": "A12", "lat": 17.772075555555556, "lon": 78.64862833333333, "lbl_lat": 17.771973853775382, "lbl_lon": 78.64849595115098}, {"label": "A13", "lat": 17.77193638888889, "lon": 78.64882583333333, "lbl_lat": 17.771789082574653, "lbl_lon": 78.6487540409546}, {"label": "A14", "lat": 17.77186, "lon": 78.64915222222223, "lbl_lat": 17.771750504828393, "lbl_lon": 78.64919646778164}, {"label": "A15", "lat": 17.771947777777775, "lon": 78.6492138888889, "lbl_lat": 17.7717400515956, "lbl_lon": 78.64927854371355}, {"label": "A16", "lat": 17.771861666666666, "lon": 78.64942722222223, "lbl_lat": 17.771760431704998, "lbl_lon": 78.64950630018593}, {"label": "A17", "lat": 17.77202833333333, "lon": 78.64940750000001, "lbl_lat": 17.771957213848925, "lbl_lon": 78.64960115281279}, {"label": "A18", "lat": 17.772175, "lon": 78.64958, "lbl_lat": 17.772093897800477, "lbl_lon": 78.64965504226666}, {"label": "A19", "lat": 17.772299444444442, "lon": 78.64972666666668, "lbl_lat": 17.77204724627742, "lbl_lon": 78.64974622806635}, {"label": "A20", "lat": 17.772178333333333, "lon": 78.64992111111111, "lbl_lat": 17.7720727494246, "lbl_lon": 78.64986750037009}, {"label": "A21", "lat": 17.772099166666667, "lon": 78.65016305555557, "lbl_lat": 17.771968003333054, "lbl_lon": 78.6500072671822}, {"label": "A22", "lat": 17.771835555555555, "lon": 78.6502188888889, "lbl_lat": 17.77181518006431, "lbl_lon": 78.65005054249018}, {"label": "A23", "lat": 17.771528611111112, "lon": 78.65023527777778, "lbl_lat": 17.7714582855144, "lbl_lon": 78.6500822909648}, {"label": "A24", "lat": 17.77134861111111, "lon": 78.6504463888889, "lbl_lat": 17.77121918337931, "lbl_lon": 78.6503437050839}, {"label": "A25", "lat": 17.771203611111112, "lon": 78.65068111111111, "lbl_lat": 17.771041464126952, "lbl_lon": 78.65069340965529}, {"label": "A26", "lat": 17.771359999999998, "lon": 78.65086805555556, "lbl_lat": 17.771295608084028, "lbl_lon": 78.65102386237095}, {"label": "A27", "lat": 17.77158083333333, "lon": 78.65085916666668, "lbl_lat": 17.771581234911462, "lbl_lon": 78.65102885035287}, {"label": "A28", "lat": 17.771755, "lon": 78.65086527777778, "lbl_lat": 17.77177143107753, "lbl_lon": 78.6510340932901}, {"label": "A29", "lat": 17.771945277777778, "lon": 78.6508175, "lbl_lat": 17.771964677221373, "lbl_lon": 78.65098597216945}, {"label": "A30", "lat": 17.77228472222222, "lon": 78.6508163888889, "lbl_lat": 17.772254409501638, "lbl_lon": 78.65098309808452}, {"label": "A31", "lat": 17.772514444444443, "lon": 78.65091166666667, "lbl_lat": 17.772477252485842, "lbl_lon": 78.65107685183342}, {"label": "A32", "lat": 17.772775555555555, "lon": 78.65093444444445, "lbl_lat": 17.77276888621216, "lbl_lon": 78.65110398693957}, {"label": "A33", "lat": 17.772977777777776, "lon": 78.65093416666667, "lbl_lat": 17.77299679747481, "lbl_lon": 78.65110268698078}, {"label": "A34", "lat": 17.773210833333334, "lon": 78.65087638888889, "lbl_lat": 17.773212973271526, "lbl_lon": 78.65104605993531}, {"label": "A35", "lat": 17.773435277777775, "lon": 78.65092555555556, "lbl_lat": 17.773491336864165, "lbl_lon": 78.65108483445647}, {"label": "A36", "lat": 17.773566388888888, "lon": 78.65074916666667, "lbl_lat": 17.773568085345257, "lbl_lon": 78.65089056063601}, {"label": "A37", "lat": 17.773656388888888, "lon": 78.65078194444445, "lbl_lat": 17.773805812337134, "lbl_lon": 78.65087002439515}];
+    const pointsData = __POINTS_DATA__;
     const markersGroup = L.layerGroup().addTo(map);
     const labelsGroup = L.layerGroup().addTo(map);
 
@@ -856,17 +850,17 @@
       const dmsLat = toDMS(lat, true);
       const dmsLon = toDMS(lon, false);
       const utm = latLonToUTM44N(lat, lon);
-      const pinnedLabel = pinned ? '<span class="pinned-tag">Pinned</span> ' : '';
-      const clearBtn = pinned ? '<button type="button" class="bar-clear-btn" onclick="clearPin()" title="Clear Pin">✕ Clear</button>' : '';
+      const pinnedLabel = pinned ? '<span class=\"pinned-tag\">Pinned</span> ' : '';
+      const clearBtn = pinned ? '<button type=\"button\" class=\"bar-clear-btn\" onclick=\"clearPin()\" title=\"Clear Pin\">✕ Clear</button>' : '';
 
       coordBar.innerHTML = 
-        '<div class="coord-inner' + (pinned ? ' is-pinned' : '') + '">' +
-          '<div class="coord-line coord-line-1">' +
-            pinnedLabel + '<span>Lat: ' + lat.toFixed(6) + '</span><span class="sep">|</span><span>Long: ' + lon.toFixed(6) + '</span>' +
+        '<div class=\"coord-inner' + (pinned ? ' is-pinned' : '') + '\">' +
+          '<div class=\"coord-line coord-line-1\">' +
+            pinnedLabel + '<span>Lat: ' + lat.toFixed(6) + '</span><span class=\"sep\">|</span><span>Long: ' + lon.toFixed(6) + '</span>' +
           '</div>' +
-          '<span class="sep sep-mid">|</span>' +
-          '<div class="coord-line coord-line-2">' +
-            '<span>' + dmsLat + '  ' + dmsLon + '</span><span class="sep">|</span><span>UTM 44N: E ' + utm.easting.toFixed(1) + '  N ' + utm.northing.toFixed(1) + '</span>' + clearBtn +
+          '<span class=\"sep sep-mid\">|</span>' +
+          '<div class=\"coord-line coord-line-2\">' +
+            '<span>' + dmsLat + '  ' + dmsLon + '</span><span class=\"sep\">|</span><span>UTM 44N: E ' + utm.easting.toFixed(1) + '  N ' + utm.northing.toFixed(1) + '</span>' + clearBtn +
           '</div>' +
         '</div>';
     }
@@ -890,7 +884,7 @@
     map.getContainer().addEventListener('mouseleave', function() {
       pointerOverMap = false;
       if (!isPinned) {
-        coordBar.innerHTML = '<span class="coord-prompt">Move the pointer over the map</span>';
+        coordBar.innerHTML = '<span class=\"coord-prompt\">Move the pointer over the map</span>';
       }
     });
 
@@ -936,21 +930,21 @@
       latestPinCopyStr = 'Lat: ' + lat.toFixed(6) + '  |  Long: ' + lon.toFixed(6) + '  |  ' + dmsLat + '  ' + dmsLon + '  |  UTM 44N: E ' + utm.easting.toFixed(1) + '  N ' + utm.northing.toFixed(1);
 
       const popupContent = 
-        '<div class="pin-popup-card">' +
-          '<div class="pin-popup-header">' +
-            '<span class="pin-popup-title">📍 Pinned Location</span>' +
-            '<span class="pin-badge ' + statusClass + '">' + statusText + '</span>' +
+        '<div class=\"pin-popup-card\">' +
+          '<div class=\"pin-popup-header\">' +
+            '<span class=\"pin-popup-title\">📍 Pinned Location</span>' +
+            '<span class=\"pin-badge ' + statusClass + '\">' + statusText + '</span>' +
           '</div>' +
-          '<div style="font-size: 11px; color: #475569; margin-bottom: 6px;">' + statusDesc + '</div>' +
-          '<div class="pin-coord-box">' +
+          '<div style=\"font-size: 11px; color: #475569; margin-bottom: 6px;\">' + statusDesc + '</div>' +
+          '<div class=\"pin-coord-box\">' +
             '<b>Lat:</b> ' + lat.toFixed(6) + '° (' + dmsLat + ')<br>' +
             '<b>Long:</b> ' + lon.toFixed(6) + '° (' + dmsLon + ')<br>' +
             '<b>UTM 44N:</b> E ' + utm.easting.toFixed(1) + ' &nbsp; N ' + utm.northing.toFixed(1) +
           '</div>' +
-          '<div class="pin-nearest-info">' + nearestHtml + '</div>' +
-          '<div class="pin-popup-actions">' +
-            '<button type="button" class="pin-action-btn copy" onclick="copyPinCoords(this)">📋 Copy</button>' +
-            '<button type="button" class="pin-action-btn clear" onclick="clearPin()">✕ Clear Pin</button>' +
+          '<div class=\"pin-nearest-info\">' + nearestHtml + '</div>' +
+          '<div class=\"pin-popup-actions\">' +
+            '<button type=\"button\" class=\"pin-action-btn copy\" onclick=\"copyPinCoords(this)\">📋 Copy</button>' +
+            '<button type=\"button\" class=\"pin-action-btn clear\" onclick=\"clearPin()\">✕ Clear Pin</button>' +
           '</div>' +
         '</div>';
 
@@ -960,13 +954,13 @@
         currentPinMarker.getPopup().setContent(popupContent);
         currentPinMarker.openPopup();
       } else {
-        const pinSvg = '<svg width="28" height="36" viewBox="0 0 24 32" fill="none" xmlns="http://www.w3.org/2000/svg">' +
-          '<filter id="pinShadow" x="-20%" y="-10%" width="140%" height="130%">' +
-            '<feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#000" flood-opacity="0.4"/>' +
+        const pinSvg = '<svg width=\"28\" height=\"36\" viewBox=\"0 0 24 32\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\">' +
+          '<filter id=\"pinShadow\" x=\"-20%\" y=\"-10%\" width=\"140%\" height=\"130%\">' +
+            '<feDropShadow dx=\"0\" dy=\"2\" stdDeviation=\"2\" flood-color=\"#000\" flood-opacity=\"0.4\"/>' +
           '</filter>' +
-          '<path d="M12 0C5.37 0 0 5.37 0 12C0 21 12 32 12 32C12 32 24 21 24 12C24 5.37 18.63 0 12 0Z" fill="#dc2626" filter="url(#pinShadow)"/>' +
-          '<circle cx="12" cy="11" r="5" fill="#ffffff"/>' +
-          '<circle cx="12" cy="11" r="2.5" fill="#dc2626"/>' +
+          '<path d=\"M12 0C5.37 0 0 5.37 0 12C0 21 12 32 12 32C12 32 24 21 24 12C24 5.37 18.63 0 12 0Z\" fill=\"#dc2626\" filter=\"url(#pinShadow)\"/>' +
+          '<circle cx=\"12\" cy=\"11\" r=\"5\" fill=\"#ffffff\"/>' +
+          '<circle cx=\"12\" cy=\"11\" r=\"2.5\" fill=\"#dc2626\"/>' +
         '</svg>';
 
         const pinIcon = L.divIcon({
@@ -1034,7 +1028,7 @@
       isPinned = false;
       pinnedLat = null;
       pinnedLon = null;
-      coordBar.innerHTML = '<span class="coord-prompt">Move the pointer over the map</span>';
+      coordBar.innerHTML = '<span class=\"coord-prompt\">Move the pointer over the map</span>';
     };
 
     window.copyPinCoords = function(btn) {
@@ -1055,9 +1049,9 @@
         try {
           document.execCommand('copy');
           showSuccess();
-        } catch (err) {
+        } catch (err) {{
           alert('Coordinates: ' + text);
-        }
+        }}
         document.body.removeChild(ta);
       }
       function showSuccess() {
@@ -1091,7 +1085,7 @@
     let googleMap = null;
     let googleBundPolyline = null;
     let googleLabelMarkers = [];
-    let currentBasemap = 'esri';
+    let currentBasemap = 'osm';
 
     function switchBasemap(choice) {
       currentBasemap = choice;
@@ -1153,7 +1147,7 @@
           };
         } else if (layer === 'bund') {
           return {
-            visible: false // Represented with custom dashed polyline
+            visible: false
           };
         } else if (layer === 'buffer') {
           return {
@@ -1185,7 +1179,7 @@
     function initGoogleMapInstance() {
       const gmapDiv = document.getElementById('google-map');
       googleMap = new google.maps.Map(gmapDiv, {
-        center: { lat: 17.772507725225225, lng: 78.64938741741742 },
+        center: { lat: __CENTER_LAT__, lng: __CENTER_LON__ },
         zoom: 17,
         mapTypeId: 'satellite',
         mapTypeControl: false,
@@ -1306,7 +1300,7 @@
         if (optSat) optSat.style.display = 'none';
         if (optHyb) optHyb.style.display = 'none';
         if (currentBasemap.startsWith('google-')) {
-          switchBasemap('esri');
+          switchBasemap('osm');
         }
       };
 
@@ -1330,7 +1324,7 @@
       script.async = true;
       script.defer = true;
       script.onerror = function() {
-        console.warn("Failed to load Google Maps script. Falling back to Esri.");
+        console.warn("Failed to load Google Maps script. Falling back to OpenStreetMap.");
         const optSat = document.getElementById('opt-google-satellite');
         const optHyb = document.getElementById('opt-google-hybrid');
         if (optSat) optSat.style.display = 'none';

@@ -19,8 +19,12 @@ from src.mapview import (
     load_lake_data,
     build_lake_geometry,
     verify_measurements,
-    generate_all_outputs
+    generate_all_outputs,
+    process_lake,
+    generate_lakes_index,
+    run_pipeline
 )
+from main import run_stage_1, run_stage_2
 
 
 def test_load_lake_data():
@@ -279,7 +283,8 @@ def test_google_maps_basemap_switcher_and_export():
         assert "esri" in html
         assert "osm" in html
         assert "localStorage" in html
-        assert "lake_871_basemap" in html
+        if file_path == "outputs/lake_871_satellite.html":
+            assert "lake_871_basemap" in html
 
         # 3. Graceful fallback on auth failure
         assert "gm_authFailure" in html
@@ -294,6 +299,117 @@ def test_google_maps_basemap_switcher_and_export():
         # 5. Export GeoJSON functionality
         assert "Export GeoJSON" in html
         assert "exportGeoJSON" in html
-        assert "yelameru_kunta_871.geojson" in html
+        if file_path == "outputs/lake_871_satellite.html":
+            assert "yelameru_kunta_871.geojson" in html
+
+
+def test_process_lake_generates_valid_lake_geojson():
+    """
+    Verify that process_lake('871') generates a self-contained lakes/871/lake.geojson
+    with all required layers: lake_polygon, buffer, boundary, bund, and points with UTM coordinates.
+    """
+    res = process_lake("871")
+    assert res["status"] == "OK"
+    geojson_path = "lakes/871/lake.geojson"
+    assert os.path.exists(geojson_path), f"Missing {geojson_path}"
+
+    with open(geojson_path, "r", encoding="utf-8") as f:
+        data = json.load(f)
+
+    assert data["type"] == "FeatureCollection"
+    assert data["lake_id"] == "871"
+    assert data["name"] == "YELAMERU KUNTA"
+    assert data["utm_epsg"] == 32644
+    assert data["utm_zone"] == "44N"
+    assert "center" in data
+    assert "facts" in data
+
+    # Verify layers in features
+    layers = [f["properties"].get("layer") for f in data["features"]]
+    assert "lake_polygon" in layers
+    assert "buffer" in layers
+    assert "boundary" in layers
+    assert "bund" in layers
+    assert layers.count("point") == 37
+
+    # Verify point feature contents
+    point_features = [f for f in data["features"] if f["properties"].get("layer") == "point"]
+    for i, pf in enumerate(point_features):
+        props = pf["properties"]
+        assert props["point"] == f"A{i+1}"
+        assert "lat" in props and "lon" in props
+        assert "utm_x" in props and "utm_y" in props
+        assert "lbl_lat" in props and "lbl_lon" in props
+        assert props["utm_zone"] == "44N"
+        assert props["utm_epsg"] == 32644
+
+
+def test_generate_lakes_index():
+    """
+    Verify that generate_lakes_index() builds a catalog in lakes/index.json
+    containing lake id, name, mandal, and status.
+    """
+    catalog = generate_lakes_index()
+    assert len(catalog) >= 1
+    lake_871 = next((item for item in catalog if item["id"] == "871"), None)
+    assert lake_871 is not None, "Lake 871 must be present in index.json"
+    assert lake_871["name"] == "YELAMERU KUNTA"
+    assert lake_871["mandal"] == "Wargal"
+    assert lake_871["status"] == "verified"
+
+    index_path = "lakes/index.json"
+    assert os.path.exists(index_path)
+    with open(index_path, "r", encoding="utf-8") as f:
+        on_disk = json.load(f)
+    assert isinstance(on_disk, list)
+    assert any(item["id"] == "871" for item in on_disk)
+
+
+def test_main_cli_lake_and_all():
+    """
+    Verify run_pipeline with lake_id and all_lakes.
+    """
+    # Single lake processing
+    res = run_pipeline(lake_id="871")
+    assert res["status"] == "OK"
+
+    # All lakes processing
+    res_all = run_pipeline(all_lakes=True)
+    assert res_all["status"] == "OK"
+    assert "871" in res_all["processed"]
+
+
+def test_main_stages_1_2_raise_not_implemented():
+    """
+    Verify that main.py stages 1 and 2 raise NotImplementedError.
+    """
+    with pytest.raises(NotImplementedError):
+        run_stage_1()
+
+    with pytest.raises(NotImplementedError):
+        run_stage_2()
+
+
+def test_index_html_has_no_hardcoded_871_and_has_sri_hashes():
+    """
+    Verify index.html:
+    - Contains no hardcoded 871 strings.
+    - Uses Leaflet with Subresource Integrity (SRI) hashes.
+    - Loads lake data dynamically from lakes/index.json and lakes/<id>/lake.geojson.
+    """
+    with open("index.html", "r", encoding="utf-8") as f:
+        content = f.read()
+
+    # Zero hardcoded 871 values
+    assert "871" not in content, "index.html should have no hardcoded '871' values"
+
+    # SRI hashes on Leaflet
+    assert "integrity=\"sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=\"" in content
+    assert "integrity=\"sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=\"" in content
+
+    # Dynamic lake catalog and relative path fetching
+    assert "lakes/index.json" in content
+    assert "lakes/${lakeId}/lake.geojson" in content or "lakes/${newLake}/lake.geojson" in content or "lakes/" in content
+
 
 

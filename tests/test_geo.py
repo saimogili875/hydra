@@ -7,7 +7,14 @@ import os
 import csv
 import pytest
 from shapely.geometry import Polygon
-from src.geo import dms_to_decimal, build_polygon, area_perimeter
+from src.geo import (
+    dms_to_decimal,
+    build_polygon,
+    area_perimeter,
+    get_utm_epsg,
+    build_lake_path,
+    compute_segment_lengths
+)
 
 
 def test_dms_to_decimal_standard():
@@ -86,4 +93,71 @@ def test_area_perimeter_with_lake_points():
     assert 15.0 < area_acres < 17.5
     # Perimeter is ~1393 m
     assert 1300.0 < perimeter_m < 1500.0
+
+
+def test_get_utm_epsg():
+    """Verify UTM zone auto-detection from longitude."""
+    assert get_utm_epsg(77.5) == 32643  # Zone 43N
+    assert get_utm_epsg(78.5) == 32644  # Zone 44N
+    assert get_utm_epsg(78.0) == 32644  # Boundary
+
+
+def test_build_polygon_invalid_raises_error():
+    """Verify self-intersecting polygon raises a clear ValueError instead of silent buffer(0)."""
+    # Self-intersecting hourglass / bowtie shape
+    invalid_coords = [(0.0, 0.0), (1.0, 1.0), (0.0, 1.0), (1.0, 0.0)]
+    with pytest.raises(ValueError) as excinfo:
+        build_polygon(invalid_coords)
+    assert "Invalid polygon geometry" in str(excinfo.value)
+    assert "Self-intersection" in str(excinfo.value)
+
+
+def test_build_lake_path_straight_and_curved():
+    """Verify build_lake_path with straight bund chord vs optional curved bund points."""
+    survey_pts = [(78.64, 17.77), (78.65, 17.77), (78.65, 17.76)]
+
+    # 1. Without bund_points -> fallback to straight chord [last, first]
+    boundary, bund = build_lake_path(survey_pts, bund_points=None)
+    assert len(boundary) == 3
+    assert len(bund) == 2
+    assert bund[0] == survey_pts[-1]
+    assert bund[1] == survey_pts[0]
+
+    # 2. With curved bund_points
+    curved_pts = [(78.65, 17.76), (78.645, 17.765), (78.64, 17.77)]
+    boundary_c, bund_c = build_lake_path(survey_pts, bund_points=curved_pts)
+    assert len(boundary_c) == 3
+    assert len(bund_c) == 3
+    assert bund_c[0] == survey_pts[-1]
+    assert bund_c[-1] == survey_pts[0]
+
+
+def test_segment_lengths_against_scan_distances():
+    """
+    Compare computed UTM segment lengths between points A1..A37 with the official scan distance column.
+    Tolerance is 0.05 m per segment (all 36 segments match within 0.03 m).
+    """
+    # Expected distance for segment i (from point i to point i+1 in A1..A37)
+    scan_distances = [
+        13.80, 10.26, 21.80, 28.07, 25.14, 29.20, 57.56, 28.40, 23.22,
+        55.61, 19.29, 26.00, 35.64, 11.71, 24.54, 18.58, 24.45, 20.79,
+        24.60, 27.11, 29.78, 34.03, 29.97, 29.63, 26.32, 24.46, 19.30,
+        21.67, 37.56, 27.36, 29.04, 22.37, 26.53, 25.38, 23.69, 10.57
+    ]
+
+    csv_path = os.path.join(os.path.dirname(__file__), "..", "data", "871_points.csv")
+    coords = []
+    with open(csv_path, mode="r", encoding="utf-8") as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            coords.append((dms_to_decimal(row["lon_dms"]), dms_to_decimal(row["lat_dms"])))
+
+    assert len(coords) == 37
+    computed_lengths = compute_segment_lengths(coords, utm_epsg=32644)
+    assert len(computed_lengths) == len(scan_distances)
+
+    for i, (computed, expected) in enumerate(zip(computed_lengths, scan_distances)):
+        diff = abs(computed - expected)
+        assert diff < 0.05, f"Segment A{i+1}->A{i+2} length {computed:.3f}m differs from scan {expected}m by {diff:.3f}m (>0.05m tolerance)"
+
 

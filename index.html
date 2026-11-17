@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>FTL Map & GIS Verification — Yelameru Kunta (ID-871)</title>
+  <title id="page-title">FTL Map & GIS Verification</title>
 
   <!-- Google Maps API Config -->
   <script src="config.js"></script>
@@ -13,9 +13,9 @@
     }
   </script>
 
-  <!-- Leaflet CSS & JS -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <!-- Leaflet CSS & JS with Subresource Integrity (SRI) -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
   <style>
     :root {
       --bg: #0f172a;
@@ -43,22 +43,52 @@
     header {
       background: var(--card-bg);
       border-bottom: 1px solid var(--card-border);
-      padding: 10px 20px;
+      padding: 10px 16px;
       display: flex;
       justify-content: space-between;
       align-items: center;
       flex-shrink: 0;
+      gap: 12px;
+      flex-wrap: wrap;
     }
-    header h1 { font-size: 1.1rem; font-weight: 600; color: #fff; }
-    header p { font-size: 0.8rem; color: var(--text-muted); }
+    .header-left {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    header h1 { font-size: 1.05rem; font-weight: 600; color: #fff; }
+    header p { font-size: 0.78rem; color: var(--text-muted); }
+    .header-controls {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .lake-select-dropdown {
+      background: #0f172a;
+      color: #38bdf8;
+      border: 1px solid var(--accent);
+      padding: 5px 10px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      outline: none;
+      min-width: 170px;
+    }
+    .lake-select-dropdown option {
+      background: #0f172a;
+      color: #f8fafc;
+    }
     .status-badge {
       background: #064e3b;
       color: var(--success);
       border: 1px solid #059669;
-      padding: 3px 8px;
+      padding: 4px 8px;
       border-radius: 9999px;
-      font-size: 0.75rem;
+      font-size: 0.74rem;
       font-weight: 500;
+      white-space: nowrap;
     }
     .main-container {
       display: flex;
@@ -66,15 +96,16 @@
       overflow: hidden;
     }
     .left-panel {
-      width: 45%;
+      width: 42%;
       display: flex;
       flex-direction: column;
       border-right: 1px solid var(--card-border);
       background: var(--card-bg);
       overflow: hidden;
+      transition: width 0.2s ease;
     }
     .facts-card {
-      padding: 12px 16px;
+      padding: 12px 14px;
       background: #182234;
       border-bottom: 1px solid var(--card-border);
       font-size: 0.8rem;
@@ -87,12 +118,12 @@
     }
     .fact-item {
       background: var(--card-bg);
-      padding: 6px 10px;
+      padding: 6px 8px;
       border-radius: 6px;
       border: 1px solid var(--card-border);
     }
-    .fact-label { font-size: 0.68rem; color: var(--text-muted); text-transform: uppercase; }
-    .fact-value { font-size: 0.88rem; font-weight: 600; color: #fff; margin-top: 2px; }
+    .fact-label { font-size: 0.66rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.3px; }
+    .fact-value { font-size: 0.86rem; font-weight: 600; color: #fff; margin-top: 2px; }
     .alert-box {
       margin-top: 8px;
       padding: 6px 10px;
@@ -100,7 +131,7 @@
       background: var(--warning-bg);
       border: 1px solid var(--warning-border);
       color: var(--warning-text);
-      font-size: 0.75rem;
+      font-size: 0.74rem;
       line-height: 1.35;
     }
     .table-container {
@@ -119,14 +150,14 @@
       background: #0f172a;
       color: var(--text-muted);
       font-weight: 600;
-      padding: 8px 12px;
+      padding: 8px 10px;
       border-bottom: 1px solid var(--card-border);
       text-transform: uppercase;
-      font-size: 0.68rem;
+      font-size: 0.67rem;
       z-index: 10;
     }
     td {
-      padding: 6px 12px;
+      padding: 6px 10px;
       border-bottom: 1px solid #293548;
       font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
     }
@@ -137,7 +168,7 @@
       display: inline-block;
       padding: 2px 6px;
       border-radius: 4px;
-      font-size: 0.68rem;
+      font-size: 0.67rem;
       background: #334155;
       color: #94a3b8;
     }
@@ -150,22 +181,24 @@
       overflow: hidden;
     }
     .view-tabs {
-      padding: 6px 16px;
+      padding: 6px 14px;
       background: #131d2e;
       border-bottom: 1px solid var(--card-border);
       display: flex;
       gap: 8px;
       align-items: center;
+      flex-wrap: wrap;
     }
     .tab-btn {
       background: transparent;
       color: var(--text-muted);
       border: 1px solid transparent;
-      padding: 6px 14px;
+      padding: 5px 12px;
       border-radius: 6px;
       cursor: pointer;
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       font-weight: 500;
+      white-space: nowrap;
     }
     .tab-btn.active {
       background: var(--card-bg);
@@ -196,7 +229,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 20px;
+      padding: 16px;
     }
     #map-image {
       max-width: 100%;
@@ -209,14 +242,15 @@
       background: var(--card-bg);
       color: var(--text);
       border: 1px solid var(--card-border);
-      padding: 5px 12px;
+      padding: 5px 10px;
       border-radius: 6px;
       cursor: pointer;
-      font-size: 0.75rem;
+      font-size: 0.74rem;
       text-decoration: none;
       display: inline-flex;
       align-items: center;
       gap: 4px;
+      white-space: nowrap;
     }
     .btn:hover { background: #2b3952; }
     .btn-export {
@@ -383,23 +417,6 @@
       transition: bottom 0.2s ease;
     }
 
-    @media (max-width: 820px) {
-      .coordinate-bar {
-        padding: 6px 10px;
-        font-size: 12px;
-      }
-      .coordinate-bar .coord-inner {
-        flex-direction: column;
-        gap: 3px;
-      }
-      .coordinate-bar .sep-mid {
-        display: none;
-      }
-      .leaflet-bottom {
-        bottom: 58px !important;
-      }
-    }
-
     /* Pin Marker & Popup Styling */
     .pin-popup-card {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -500,19 +517,49 @@
     .pin-action-btn.clear:hover {
       background: #fee2e2;
     }
+
+    /* Mobile Responsive Layout */
+    @media (max-width: 860px) {
+      .main-container {
+        flex-direction: column;
+      }
+      .left-panel {
+        width: 100%;
+        max-height: 40vh;
+        border-right: none;
+        border-bottom: 2px solid var(--card-border);
+      }
+      .coordinate-bar {
+        padding: 6px 10px;
+        font-size: 12px;
+      }
+      .coordinate-bar .coord-inner {
+        flex-direction: column;
+        gap: 3px;
+      }
+      .coordinate-bar .sep-mid {
+        display: none;
+      }
+      .leaflet-bottom {
+        bottom: 58px !important;
+      }
+    }
   </style>
 </head>
 <body>
   <header>
-    <div>
-      <h1>FTL Map & GIS Boundary Explorer</h1>
-      <p>Yelameru Kunta (ID: 871) • Wargal Mandal, Siddipet / Medak</p>
+    <div class="header-left">
+      <h1 id="header-title">FTL Map & GIS Boundary Explorer</h1>
+      <p id="header-subtitle">Loading lake survey data...</p>
     </div>
-    <div style="display: flex; gap: 8px; align-items: center;">
-      <span class="status-badge">37 GIS Points Active</span>
+    <div class="header-controls">
+      <select id="lake-selector" class="lake-select-dropdown" aria-label="Select Lake">
+        <option value="">Loading lakes...</option>
+      </select>
+      <span id="points-status" class="status-badge">— Points Active</span>
       <button type="button" class="btn btn-export" onclick="exportGeoJSON()" title="Download GeoJSON (EPSG:4326) for QGIS">📥 Export GeoJSON</button>
-      <a href="/data/871_points.csv" download class="btn">Points CSV</a>
-      <a href="/data/871_facts.json" download class="btn">Facts JSON</a>
+      <a id="btn-points-csv" href="#" download class="btn">Points CSV</a>
+      <a id="btn-facts-json" href="#" download class="btn">Facts JSON</a>
     </div>
   </header>
 
@@ -522,32 +569,32 @@
       <div class="facts-card">
         <div style="display: flex; justify-content: space-between; align-items: baseline;">
           <h2 style="font-size: 0.9rem; font-weight: 600;">Lake Details Box</h2>
-          <span style="color: var(--text-muted); font-size: 0.72rem;">Survey: 20-08-2014</span>
+          <span id="fact-survey-date" style="color: var(--text-muted); font-size: 0.72rem;">Survey: —</span>
         </div>
         <div class="facts-grid">
           <div class="fact-item">
             <div class="fact-label">Lake Name</div>
-            <div class="fact-value">Yelameru Kunta</div>
+            <div id="fact-lake-name" class="fact-value">—</div>
           </div>
           <div class="fact-item">
             <div class="fact-label">Lake ID</div>
-            <div class="fact-value">871</div>
+            <div id="fact-lake-id" class="fact-value">—</div>
           </div>
           <div class="fact-item">
             <div class="fact-label">FTL Area</div>
-            <div class="fact-value">16.152 Acres</div>
+            <div id="fact-area" class="fact-value">—</div>
           </div>
           <div class="fact-item">
             <div class="fact-label">Perimeter</div>
-            <div class="fact-value">1411.706 m</div>
+            <div id="fact-perimeter" class="fact-value">—</div>
           </div>
           <div class="fact-item">
             <div class="fact-label">Buffer Zone</div>
-            <div class="fact-value">9 m</div>
+            <div id="fact-buffer" class="fact-value">—</div>
           </div>
           <div class="fact-item">
             <div class="fact-label">FTL Level</div>
-            <div class="fact-value">+588.350m</div>
+            <div id="fact-ftl-level" class="fact-value">—</div>
           </div>
         </div>
         <div class="alert-box">
@@ -566,7 +613,7 @@
             </tr>
           </thead>
           <tbody id="points-body">
-            <!-- Points loaded via fetch -->
+            <!-- Populated via textContent -->
           </tbody>
         </table>
       </div>
@@ -619,7 +666,7 @@
         <!-- CAD Image Map -->
         <div id="cad-view" style="display: none;">
           <div class="image-viewport">
-            <img id="map-image" src="/downloads/ftl/lake_map_upright.jpg" alt="CAD Drawing">
+            <img id="map-image" src="" alt="CAD Drawing">
           </div>
         </div>
       </div>
@@ -631,7 +678,11 @@
   </footer>
 
   <script>
-    // Tab switching
+    // 1. URL Query Parameter Handling: ?lake=<id>
+    const urlParams = new URLSearchParams(window.location.search);
+    let activeLakeId = urlParams.get('lake') || '';
+
+    // 2. Tab switching
     function switchView(mode) {
       const gisView = document.getElementById('gis-view');
       const cadView = document.getElementById('cad-view');
@@ -670,274 +721,36 @@
     function zoomOut() { scale = Math.max(scale - 0.25, 0.5); updateTransform(); }
     function rotateMap() { rotation = (rotation + 90) % 360; updateTransform(); }
 
-    // DMS to Decimal Degrees parser
-    function parseDMS(dmsStr) {
-      const match = dmsStr.match(/(\d+)°(\d+)'([\d.]+)"([NSEW])/);
-      if (!match) return 0;
-      const deg = parseFloat(match[1]);
-      const min = parseFloat(match[2]);
-      const sec = parseFloat(match[3]);
-      const dir = match[4];
-      let dd = deg + min / 60 + sec / 3600;
-      if (dir === 'S' || dir === 'W') dd = -dd;
-      return dd;
-    }
-
-    // Initialize Leaflet GIS Map
+    // 3. Initialize Leaflet GIS Map
     const map = L.map('leaflet-map').setView([17.7725, 78.649], 16);
 
-    // Satellite imagery layer (ESRI World Imagery)
     const satelliteLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
       attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
       maxZoom: 19
     });
 
-    // OpenStreetMap standard layer (Default)
     const streetLayer = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
       maxZoom: 19
     }).addTo(map);
 
-    const markers = {};
-    const latlngs = [];
-    let pointsDataList = [];
+    L.control.scale({ imperial: false, position: 'bottomright' }).addTo(map);
+
+    // Dynamic layer holders
     let boundaryPolyline = null;
     let bundPolyline = null;
     let bufferPolygonLayer = null;
+    let markersLayerGroup = L.layerGroup().addTo(map);
+    const markers = {};
+    let pointsDataList = [];
+    let boundaryCoords = [];
+    let bufferCoords = [];
+    let activeLakeGeoJSON = null;
+    let activeUtmZone = 44;
+    let activeUtmZoneStr = '44N';
 
-    // 9m Buffer polygon coordinates for Lake 871
-    const bufferCoords = [[17.773848888888885, 78.64655055555556], [17.77382555555555, 78.64667833333334], [17.77376361111111, 78.64675027777778], [17.77365111111111, 78.6469188888889], [17.773447222222217, 78.64707611111112], [17.773249444444442, 78.64719222222223], [17.773136388888883, 78.64744111111112], [17.772894999999995, 78.64792166666668], [17.772751388888892, 78.64814333333334], [17.772541666666662, 78.64813972222223], [17.772235, 78.648555], [17.772075555555556, 78.64862833333333], [17.771936388888886, 78.64882583333333], [17.77185999999999, 78.64915222222223], [17.771947777777775, 78.64921388888891], [17.771861666666666, 78.64942722222223], [17.772028333333328, 78.64940750000002], [17.772174999999997, 78.64958], [17.772299444444442, 78.64972666666668], [17.772178333333336, 78.64992111111111], [17.77209916666667, 78.65016305555557], [17.771835555555555, 78.6502188888889], [17.77152861111111, 78.65023527777778], [17.771348611111108, 78.6504463888889], [17.771203611111115, 78.65068111111111], [17.771359999999998, 78.65086805555556], [17.771580833333335, 78.65085916666668], [17.771755, 78.65086527777778], [17.77194527777778, 78.6508175], [17.77228472222222, 78.6508163888889], [17.772514444444443, 78.65091166666667], [17.772775555555555, 78.65093444444445], [17.77297777777777, 78.65093416666667], [17.773210833333334, 78.65087638888889], [17.773435277777775, 78.65092555555556], [17.77356638888888, 78.65074916666667], [17.773656388888885, 78.65078194444445], [17.773629608482864, 78.65086205086735], [17.773594789390348, 78.65084936982016], [17.773468338286637, 78.65101948927447], [17.773211929756442, 78.65096332043716], [17.7729873519238, 78.6510189963563], [17.77277221790972, 78.65101929176889], [17.772495644546943, 78.65099516502515], [17.772269286086765, 78.6509012822578], [17.771955043687402, 78.65090231072536], [17.77176329082015, 78.6509504587983], [17.77158103427152, 78.6509440637457], [17.771324316829684, 78.6509543968995], [17.771102137500872, 78.65068880769869], [17.77128370359778, 78.6503948933311], [17.771490495134238, 78.65015235996037], [17.771825339452995, 78.65013448124675], [17.772037309807928, 78.65008958544134], [17.772104674197898, 78.64988371032189], [17.772197568249407, 78.64973456856407], [17.77211417334587, 78.64963628171384], [17.77199555055062, 78.6494967650497], [17.771732840994563, 78.64952785217693], [17.771846897030468, 78.64924528806985], [17.771767582338068, 78.64918956698897], [17.77186127896497, 78.6487892271484], [17.772022924847825, 78.64855982547539], [17.772183264173385, 78.64848608051474], [17.77250219947709, 78.6480541887289], [17.772708712104304, 78.64805774448224], [17.772825117440693, 78.6478780704201], [17.77306363815637, 78.64740322480357], [17.77318706679169, 78.64713149979883], [17.773402976117893, 78.64700474398724], [17.773592050008954, 78.64685894581069], [17.77369978410641, 78.64669747763664], [17.773749948597672, 78.6466392148417], [17.773769039257505, 78.64653467074488], [17.773848888888885, 78.64655055555556]];
-
-    // Build GeoJSON Object for Google Maps and Export
-    function buildLakeGeoJSON(pts, bufCoords) {
-      const boundaryLine = pts.map(p => [p.lon, p.lat]);
-      const bundLine = [[pts[pts.length - 1].lon, pts[pts.length - 1].lat], [pts[0].lon, pts[0].lat]];
-      const bufRing = bufCoords.map(c => [c[1], c[0]]);
-
-      const features = [
-        {
-          type: "Feature",
-          id: "boundary",
-          properties: {
-            layer: "boundary",
-            name: "Survey Boundary (A1 - A37)",
-            strokeColor: "#ff6b00",
-            strokeWeight: 3.5,
-            strokeOpacity: 1.0
-          },
-          geometry: {
-            type: "LineString",
-            coordinates: boundaryLine
-          }
-        },
-        {
-          type: "Feature",
-          id: "bund",
-          properties: {
-            layer: "bund",
-            name: "Bund Top Embankment (A37 - A1)",
-            strokeColor: "#8d5524",
-            strokeWeight: 3.0,
-            strokeOpacity: 0.95
-          },
-          geometry: {
-            type: "LineString",
-            coordinates: bundLine
-          }
-        },
-        {
-          type: "Feature",
-          id: "buffer",
-          properties: {
-            layer: "buffer",
-            name: "Buffer Zone (9m)",
-            fillColor: "#39ff14",
-            fillOpacity: 0.35,
-            strokeColor: "#00c853",
-            strokeWeight: 2.0,
-            strokeOpacity: 1.0
-          },
-          geometry: {
-            type: "Polygon",
-            coordinates: [bufRing]
-          }
-        }
-      ];
-
-      pts.forEach(p => {
-        features.push({
-          type: "Feature",
-          id: "point_" + p.point,
-          properties: {
-            layer: "point",
-            point: p.point,
-            latDms: p.latDms,
-            lonDms: p.lonDms,
-            note: p.note
-          },
-          geometry: {
-            type: "Point",
-            coordinates: [p.lon, p.lat]
-          }
-        });
-      });
-
-      return {
-        type: "FeatureCollection",
-        name: "Yelameru_Kunta_871_FTL_and_Buffer",
-        crs: {
-          type: "name",
-          properties: { name: "urn:ogc:def:crs:OGC:1.3:CRS84" }
-        },
-        features: features
-      };
-    }
-
-    // Export GeoJSON function
-    window.exportGeoJSON = function() {
-      if (!window.cachedLakeGeoJSON) {
-        alert("Lake data is still loading. Please try again in a moment.");
-        return;
-      }
-      const jsonStr = JSON.stringify(window.cachedLakeGeoJSON, null, 2);
-      const blob = new Blob([jsonStr], { type: 'application/geo+json' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'yelameru_kunta_871.geojson';
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-    };
-
-    // Load CSV Points and plot on GIS map
-    fetch('/data/871_points.csv')
-      .then(res => res.text())
-      .then(csv => {
-        const lines = csv.trim().split('\n').slice(1);
-        const tbody = document.getElementById('points-body');
-
-        lines.forEach((line) => {
-          const parts = line.split(',');
-          const pt = parts[0].trim();
-          const latDms = parts[1].trim();
-          const lonDms = parts[2].trim();
-          const note = parts.slice(3).join(',').trim();
-
-          const lat = parseDMS(latDms);
-          const lon = parseDMS(lonDms);
-          latlngs.push([lat, lon]);
-
-          pointsDataList.push({
-            point: pt,
-            latDms: latDms,
-            lonDms: lonDms,
-            lat: lat,
-            lon: lon,
-            note: note
-          });
-
-          // Marker
-          const marker = L.circleMarker([lat, lon], {
-            radius: 5,
-            color: '#ff6b00',
-            fillColor: '#ffffff',
-            fillOpacity: 1.0,
-            weight: 2
-          }).addTo(map);
-
-          marker.bindPopup(`
-            <div style="font-family: sans-serif; font-size: 13px;">
-              <strong style="color: #38bdf8; font-size: 14px;">Point ${pt}</strong><br>
-              <b>Lat:</b> ${latDms}<br>
-              <b>Lon:</b> ${lonDms}<br>
-              <b>DD:</b> ${lat.toFixed(6)}°, ${lon.toFixed(6)}°
-              ${note ? `<br><small style="color: #fde68a;">${note}</small>` : ''}
-            </div>
-          `);
-
-          markers[pt] = marker;
-
-          // Table Row
-          const tr = document.createElement('tr');
-          if (note && note.trim().length > 0) tr.className = 'has-note';
-          tr.id = `row-${pt}`;
-          tr.innerHTML = `
-            <td><strong>${pt}</strong></td>
-            <td>${latDms}</td>
-            <td>${lonDms}</td>
-            <td>${note ? `<span class="badge">${note}</span>` : '<span style="color: #475569;">—</span>'}</td>
-          `;
-
-          // Click table row to fly to point on GIS map
-          tr.addEventListener('click', () => {
-            switchView('gis');
-            document.querySelectorAll('tr').forEach(r => r.classList.remove('active-row'));
-            tr.classList.add('active-row');
-            if (currentBasemap.startsWith('google-') && googleMap) {
-              googleMap.panTo({ lat: lat, lng: lon });
-              googleMap.setZoom(18);
-            } else {
-              map.flyTo([lat, lon], 18, { duration: 1.0 });
-              marker.openPopup();
-            }
-          });
-
-          tbody.appendChild(tr);
-        });
-
-        // 1. Draw Orange FTL line (open path A1 -> A37)
-        boundaryPolyline = L.polyline(latlngs, {
-          color: '#ff6b00',
-          weight: 3.2,
-          opacity: 1.0
-        }).addTo(map);
-
-        // 2. Draw Brown dashed bund line (A37 -> A1)
-        bundPolyline = L.polyline([latlngs[latlngs.length - 1], latlngs[0]], {
-          color: '#8d5524',
-          weight: 2.8,
-          dashArray: '7, 5',
-          opacity: 0.95
-        }).addTo(map);
-
-        // 3. Draw Green 9m Buffer
-        bufferPolygonLayer = L.polygon(bufferCoords, {
-          color: '#00c853',
-          weight: 1.8,
-          fillColor: '#39ff14',
-          fillOpacity: 0.25
-        }).addTo(map);
-
-        map.fitBounds(boundaryPolyline.getBounds(), { padding: [40, 40] });
-
-        // Cache GeoJSON
-        window.cachedLakeGeoJSON = buildLakeGeoJSON(pointsDataList, bufferCoords);
-
-        // If Google Maps is already initialized, populate Data Layer
-        if (googleMap) {
-          loadGeoJSONToGoogleMap(window.cachedLakeGeoJSON);
-        }
-      });
-
-    // Scale Bar (Bottom-Right)
-    L.control.scale({ imperial: false, position: 'bottomright' }).addTo(map);
-
-    // Live Coordinate Readout & Interactive Pin
-    function toDMS(val, isLat) {
-      const dir = isLat ? (val >= 0 ? 'N' : 'S') : (val >= 0 ? 'E' : 'W');
-      const abs = Math.abs(val);
-      const deg = Math.floor(abs);
-      const remMin = (abs - deg) * 60;
-      const min = Math.floor(remMin);
-      const sec = (remMin - min) * 60;
-      const minStr = min < 10 ? '0' + min : '' + min;
-      const secStr = sec.toFixed(3).padStart(6, '0');
-      return deg + '°' + minStr + "'" + secStr + '"' + dir;
-    }
-
-    function latLonToUTM44N(lat, lon) {
+    // 4. UTM Projection derived dynamically from GeoJSON
+    function latLonToUTM(lat, lon, zone) {
       const a = 6378137.0;
       const f = 1 / 298.257223563;
       const b = a * (1 - f);
@@ -947,7 +760,7 @@
 
       const latRad = lat * Math.PI / 180;
       const lonRad = lon * Math.PI / 180;
-      const lon0 = 81.0 * Math.PI / 180;
+      const lon0 = (zone * 6 - 183) * Math.PI / 180;
 
       const sinLat = Math.sin(latRad);
       const cosLat = Math.cos(latRad);
@@ -968,6 +781,18 @@
       if (lat < 0) y += 10000000.0;
 
       return { easting: x, northing: y };
+    }
+
+    function toDMS(val, isLat) {
+      const dir = isLat ? (val >= 0 ? 'N' : 'S') : (val >= 0 ? 'E' : 'W');
+      const abs = Math.abs(val);
+      const deg = Math.floor(abs);
+      const remMin = (abs - deg) * 60;
+      const min = Math.floor(remMin);
+      const sec = (remMin - min) * 60;
+      const minStr = min < 10 ? '0' + min : '' + min;
+      const secStr = sec.toFixed(3).padStart(6, '0');
+      return deg + '°' + minStr + "'" + secStr + '"' + dir;
     }
 
     function pointInPolygon(pt, vs) {
@@ -994,6 +819,274 @@
       return R * c;
     }
 
+    // 5. Populate Lake Search & Dropdown from lakes/index.json
+    function loadLakesCatalog() {
+      fetch('lakes/index.json')
+        .then(res => res.json())
+        .then(catalog => {
+          const select = document.getElementById('lake-selector');
+          select.innerHTML = '';
+          if (!activeLakeId && catalog.length > 0) {
+            activeLakeId = String(catalog[0].id);
+          }
+          catalog.forEach(item => {
+            const opt = document.createElement('option');
+            opt.value = item.id;
+            opt.textContent = `${item.id} — ${item.name} (${item.mandal || item.village || 'Telangana'})`;
+            if (String(item.id) === String(activeLakeId)) {
+              opt.selected = true;
+            }
+            select.appendChild(opt);
+          });
+          select.addEventListener('change', (e) => {
+            const newLake = e.target.value;
+            const newUrl = new URL(window.location);
+            newUrl.searchParams.set('lake', newLake);
+            window.history.pushState({}, '', newUrl);
+            activeLakeId = newLake;
+            loadActiveLake(newLake);
+          });
+          if (activeLakeId) {
+            loadActiveLake(activeLakeId);
+          }
+        })
+        .catch(err => {
+          console.warn("Could not load lakes/index.json:", err);
+          if (activeLakeId) {
+            loadActiveLake(activeLakeId);
+          }
+        });
+    }
+
+    // 6. Data-Driven Lake Loader (reads lake.geojson + facts.json)
+    function loadActiveLake(lakeId) {
+      if (!lakeId) return;
+      clearPin();
+      markersLayerGroup.clearLayers();
+      if (boundaryPolyline) map.removeLayer(boundaryPolyline);
+      if (bundPolyline) map.removeLayer(bundPolyline);
+      if (bufferPolygonLayer) map.removeLayer(bufferPolygonLayer);
+
+      const geojsonUrl = `lakes/${lakeId}/lake.geojson`;
+      const factsUrl = `lakes/${lakeId}/facts.json`;
+
+      // Update download links
+      const btnCsv = document.getElementById('btn-points-csv');
+      const btnFacts = document.getElementById('btn-facts-json');
+      btnCsv.href = `lakes/${lakeId}/points.csv`;
+      btnFacts.href = `lakes/${lakeId}/facts.json`;
+
+      // Update CAD Drawing Image tab
+      const cadImg = document.getElementById('map-image');
+      cadImg.src = `lakes/${lakeId}/drawing.jpg`;
+      cadImg.onerror = () => {
+        cadImg.style.display = 'none';
+      };
+      cadImg.onload = () => {
+        cadImg.style.display = 'block';
+      };
+
+      // Fetch facts.json
+      fetch(factsUrl)
+        .then(res => res.json())
+        .then(facts => {
+          const titleText = `${facts.lake_name || 'Lake'} (ID: ${facts.lake_id || lakeId})`;
+          document.getElementById('page-title').textContent = `FTL Map & GIS Verification — ${titleText}`;
+          document.getElementById('header-title').textContent = `FTL Map & GIS Boundary Explorer — ${facts.lake_name || 'Lake'}`;
+          
+          const locStr = [facts.village, facts.mandal, facts.district].filter(Boolean).join(', ');
+          document.getElementById('header-subtitle').textContent = `Lake ID: ${facts.lake_id || lakeId}${locStr ? ' • ' + locStr : ''}`;
+
+          document.getElementById('fact-lake-name').textContent = facts.lake_name || '—';
+          document.getElementById('fact-lake-id').textContent = facts.lake_id || lakeId;
+          document.getElementById('fact-area').textContent = facts.area_acres ? `${facts.area_acres} Acres` : '—';
+          document.getElementById('fact-perimeter').textContent = facts.perimeter_m ? `${facts.perimeter_m} m` : '—';
+          document.getElementById('fact-buffer').textContent = facts.buffer_m ? `${facts.buffer_m} m` : '9 m';
+          document.getElementById('fact-ftl-level').textContent = facts.ftl_level_m || '—';
+          document.getElementById('fact-survey-date').textContent = `Survey: ${facts.survey_date || '—'}`;
+        })
+        .catch(e => console.warn("Could not load facts.json:", e));
+
+      // Fetch lake.geojson (Self-contained data)
+      fetch(geojsonUrl)
+        .then(res => res.json())
+        .then(geojson => {
+          activeLakeGeoJSON = geojson;
+          window.cachedLakeGeoJSON = geojson;
+
+          if (geojson.utm_zone) {
+            activeUtmZoneStr = geojson.utm_zone;
+            const zoneNum = parseInt(geojson.utm_zone);
+            if (!isNaN(zoneNum)) activeUtmZone = zoneNum;
+          } else if (geojson.utm_epsg) {
+            activeUtmZone = geojson.utm_epsg - 32600;
+            activeUtmZoneStr = `${activeUtmZone}N`;
+          }
+
+          // Extract layers from GeoJSON
+          boundaryCoords = [];
+          bufferCoords = [];
+          let bundCoords = [];
+          pointsDataList = [];
+
+          geojson.features.forEach(feat => {
+            const props = feat.properties || {};
+            if (props.layer === 'boundary') {
+              boundaryCoords = feat.geometry.coordinates.map(c => [c[1], c[0]]);
+            } else if (props.layer === 'bund') {
+              bundCoords = feat.geometry.coordinates.map(c => [c[1], c[0]]);
+            } else if (props.layer === 'buffer') {
+              bufferCoords = feat.geometry.coordinates[0].map(c => [c[1], c[0]]);
+            } else if (props.layer === 'point') {
+              pointsDataList.push({
+                point: props.point,
+                lat: props.lat,
+                lon: props.lon,
+                lat_dms: props.lat_dms || toDMS(props.lat, true),
+                lon_dms: props.lon_dms || toDMS(props.lon, false),
+                utm_x: props.utm_x,
+                utm_y: props.utm_y,
+                note: props.note || ''
+              });
+            }
+          });
+
+          // Fallback if bundCoords was not explicit in GeoJSON
+          if (bundCoords.length === 0 && boundaryCoords.length >= 2) {
+            bundCoords = [boundaryCoords[boundaryCoords.length - 1], boundaryCoords[0]];
+          }
+
+          // 1. Draw Orange FTL line
+          boundaryPolyline = L.polyline(boundaryCoords, {
+            color: '#ff6b00',
+            weight: 3.2,
+            opacity: 1.0
+          }).addTo(map);
+
+          // 2. Draw Brown dashed bund line
+          bundPolyline = L.polyline(bundCoords, {
+            color: '#8d5524',
+            weight: 2.8,
+            dashArray: '7, 5',
+            opacity: 0.95
+          }).addTo(map);
+
+          // 3. Draw Green buffer
+          if (bufferCoords.length > 0) {
+            bufferPolygonLayer = L.polygon(bufferCoords, {
+              color: '#00c853',
+              weight: 1.8,
+              fillColor: '#39ff14',
+              fillOpacity: 0.25
+            }).addTo(map);
+          }
+
+          // 4. Populate Table and Vertex Markers safely using textContent
+          const tbody = document.getElementById('points-body');
+          tbody.innerHTML = '';
+          document.getElementById('points-status').textContent = `${pointsDataList.length} GIS Points Active`;
+
+          pointsDataList.forEach(p => {
+            const marker = L.circleMarker([p.lat, p.lon], {
+              radius: 5,
+              color: '#ff6b00',
+              fillColor: '#ffffff',
+              fillOpacity: 1.0,
+              weight: 2
+            });
+            markersLayerGroup.addLayer(marker);
+
+            const popupDiv = document.createElement('div');
+            popupDiv.style.fontFamily = 'sans-serif';
+            popupDiv.style.fontSize = '13px';
+
+            const pTitle = document.createElement('strong');
+            pTitle.style.color = '#38bdf8';
+            pTitle.style.fontSize = '14px';
+            pTitle.textContent = `Point ${p.point}`;
+            popupDiv.appendChild(pTitle);
+            popupDiv.appendChild(document.createElement('br'));
+
+            const latLine = document.createElement('div');
+            latLine.textContent = `Lat: ${p.lat_dms} (${p.lat.toFixed(6)}°)`;
+            popupDiv.appendChild(latLine);
+
+            const lonLine = document.createElement('div');
+            lonLine.textContent = `Lon: ${p.lon_dms} (${p.lon.toFixed(6)}°)`;
+            popupDiv.appendChild(lonLine);
+
+            if (p.note) {
+              const noteEl = document.createElement('small');
+              noteEl.style.color = '#fde68a';
+              noteEl.textContent = p.note;
+              popupDiv.appendChild(noteEl);
+            }
+
+            marker.bindPopup(popupDiv);
+            markers[p.point] = marker;
+
+            // Safe table row using textContent
+            const tr = document.createElement('tr');
+            if (p.note && p.note.trim().length > 0) tr.className = 'has-note';
+            tr.id = `row-${p.point}`;
+
+            const tdPt = document.createElement('td');
+            const ptStrong = document.createElement('strong');
+            ptStrong.textContent = p.point;
+            tdPt.appendChild(ptStrong);
+            tr.appendChild(tdPt);
+
+            const tdLat = document.createElement('td');
+            tdLat.textContent = p.lat_dms;
+            tr.appendChild(tdLat);
+
+            const tdLon = document.createElement('td');
+            tdLon.textContent = p.lon_dms;
+            tr.appendChild(tdLon);
+
+            const tdNote = document.createElement('td');
+            if (p.note && p.note.trim().length > 0) {
+              const badge = document.createElement('span');
+              badge.className = 'badge';
+              badge.textContent = p.note;
+              tdNote.appendChild(badge);
+            } else {
+              tdNote.textContent = '—';
+            }
+            tr.appendChild(tdNote);
+
+            tr.addEventListener('click', () => {
+              switchView('gis');
+              document.querySelectorAll('tr').forEach(r => r.classList.remove('active-row'));
+              tr.classList.add('active-row');
+              if (currentBasemap.startsWith('google-') && googleMap) {
+                googleMap.panTo({ lat: p.lat, lng: p.lon });
+                googleMap.setZoom(18);
+              } else {
+                map.flyTo([p.lat, p.lon], 18, { duration: 0.8 });
+                marker.openPopup();
+              }
+            });
+
+            tbody.appendChild(tr);
+          });
+
+          if (boundaryCoords.length > 0) {
+            map.fitBounds(boundaryPolyline.getBounds(), { padding: [40, 40] });
+          }
+
+          // If Google Maps is initialized, update its Data layer
+          if (googleMap) {
+            loadGeoJSONToGoogleMap(activeLakeGeoJSON);
+          }
+        })
+        .catch(err => {
+          console.error("Failed to load lake data:", err);
+          document.getElementById('header-subtitle').textContent = `Error loading lake ${lakeId}`;
+        });
+    }
+
+    // 7. Coordinate bar & Interactive Pin Drop
     const coordBar = document.getElementById('coordinate-bar');
     let isPinned = false;
     let pinnedLat = null;
@@ -1001,40 +1094,33 @@
     let currentPinMarker = null;
     let googlePinMarker = null;
     let googleInfoWindow = null;
-    let pointerOverMap = false;
     let latestPinCopyStr = '';
 
     function renderCoordinateBar(lat, lon, pinned) {
       const dmsLat = toDMS(lat, true);
       const dmsLon = toDMS(lon, false);
-      const utm = latLonToUTM44N(lat, lon);
-      const pinnedLabel = pinned ? '<span class="pinned-tag">Pinned</span> ' : '';
-      const clearBtn = pinned ? '<button type="button" class="bar-clear-btn" onclick="clearPin()" title="Clear Pin">✕ Clear</button>' : '';
+      const utm = latLonToUTM(lat, lon, activeUtmZone);
+      const pinnedLabel = pinned ? '<span class=\"pinned-tag\">Pinned</span> ' : '';
+      const clearBtn = pinned ? '<button type=\"button\" class=\"bar-clear-btn\" onclick=\"clearPin()\" title=\"Clear Pin\">✕ Clear</button>' : '';
 
       coordBar.innerHTML = 
-        '<div class="coord-inner' + (pinned ? ' is-pinned' : '') + '">' +
-          '<div class="coord-line coord-line-1">' +
-            pinnedLabel + '<span>Lat: ' + lat.toFixed(6) + '</span><span class="sep">|</span><span>Long: ' + lon.toFixed(6) + '</span>' +
+        '<div class=\"coord-inner' + (pinned ? ' is-pinned' : '') + '\">' +
+          '<div class=\"coord-line coord-line-1\">' +
+            pinnedLabel + '<span>Lat: ' + lat.toFixed(6) + '</span><span class=\"sep\">|</span><span>Long: ' + lon.toFixed(6) + '</span>' +
           '</div>' +
-          '<span class="sep sep-mid">|</span>' +
-          '<div class="coord-line coord-line-2">' +
-            '<span>' + dmsLat + '  ' + dmsLon + '</span><span class="sep">|</span><span>UTM 44N: E ' + utm.easting.toFixed(1) + '  N ' + utm.northing.toFixed(1) + '</span>' + clearBtn +
+          '<span class=\"sep sep-mid\">|</span>' +
+          '<div class=\"coord-line coord-line-2\">' +
+            '<span>' + dmsLat + '  ' + dmsLon + '</span><span class=\"sep\">|</span><span>UTM ' + activeUtmZoneStr + ': E ' + utm.easting.toFixed(1) + '  N ' + utm.northing.toFixed(1) + '</span>' + clearBtn +
           '</div>' +
         '</div>';
     }
 
     map.on('mousemove', function(e) {
-      pointerOverMap = true;
-      if (!isPinned) {
-        renderCoordinateBar(e.latlng.lat, e.latlng.lng, false);
-      }
+      if (!isPinned) renderCoordinateBar(e.latlng.lat, e.latlng.lng, false);
     });
 
     map.getContainer().addEventListener('mouseleave', function() {
-      pointerOverMap = false;
-      if (!isPinned) {
-        coordBar.innerHTML = '<span class="coord-prompt">Move the pointer over the map</span>';
-      }
+      if (!isPinned) coordBar.innerHTML = '<span class=\"coord-prompt\">Move the pointer over the map</span>';
     });
 
     function setPin(lat, lon) {
@@ -1044,9 +1130,9 @@
 
       renderCoordinateBar(lat, lon, true);
 
-      const closedLakeCoords = latlngs.concat([latlngs[0]]);
-      const isInsideFTL = pointInPolygon([lat, lon], closedLakeCoords);
-      const isInsideBuffer = !isInsideFTL && pointInPolygon([lat, lon], bufferCoords);
+      const closedCoords = boundaryCoords.concat([boundaryCoords[0]]);
+      const isInsideFTL = pointInPolygon([lat, lon], closedCoords);
+      const isInsideBuffer = !isInsideFTL && (bufferCoords.length > 0 && pointInPolygon([lat, lon], bufferCoords));
 
       let statusClass = 'outside';
       let statusText = 'OUTSIDE FTL & BUFFER';
@@ -1063,13 +1149,11 @@
 
       let nearestPt = null;
       let minDist = Infinity;
-      Object.keys(markers).forEach(ptId => {
-        const m = markers[ptId];
-        const mLatLng = m.getLatLng();
-        const d = getDistanceMeters(lat, lon, mLatLng.lat, mLatLng.lng);
+      pointsDataList.forEach(p => {
+        const d = getDistanceMeters(lat, lon, p.lat, p.lon);
         if (d < minDist) {
           minDist = d;
-          nearestPt = ptId;
+          nearestPt = p.point;
         }
       });
       const distStr = minDist < 1000 ? (minDist.toFixed(1) + ' m') : ((minDist / 1000).toFixed(2) + ' km');
@@ -1077,25 +1161,25 @@
 
       const dmsLat = toDMS(lat, true);
       const dmsLon = toDMS(lon, false);
-      const utm = latLonToUTM44N(lat, lon);
-      latestPinCopyStr = 'Lat: ' + lat.toFixed(6) + '  |  Long: ' + lon.toFixed(6) + '  |  ' + dmsLat + '  ' + dmsLon + '  |  UTM 44N: E ' + utm.easting.toFixed(1) + '  N ' + utm.northing.toFixed(1);
+      const utm = latLonToUTM(lat, lon, activeUtmZone);
+      latestPinCopyStr = 'Lat: ' + lat.toFixed(6) + '  |  Long: ' + lon.toFixed(6) + '  |  ' + dmsLat + '  ' + dmsLon + '  |  UTM ' + activeUtmZoneStr + ': E ' + utm.easting.toFixed(1) + '  N ' + utm.northing.toFixed(1);
 
       const popupContent = 
-        '<div class="pin-popup-card">' +
-          '<div class="pin-popup-header">' +
-            '<span class="pin-popup-title">📍 Pinned Location</span>' +
-            '<span class="pin-badge ' + statusClass + '">' + statusText + '</span>' +
+        '<div class=\"pin-popup-card\">' +
+          '<div class=\"pin-popup-header\">' +
+            '<span class=\"pin-popup-title\">📍 Pinned Location</span>' +
+            '<span class=\"pin-badge ' + statusClass + '\">' + statusText + '</span>' +
           '</div>' +
-          '<div style="font-size: 11px; color: #475569; margin-bottom: 6px;">' + statusDesc + '</div>' +
-          '<div class="pin-coord-box">' +
+          '<div style=\"font-size: 11px; color: #475569; margin-bottom: 6px;\">' + statusDesc + '</div>' +
+          '<div class=\"pin-coord-box\">' +
             '<b>Lat:</b> ' + lat.toFixed(6) + '° (' + dmsLat + ')<br>' +
             '<b>Long:</b> ' + lon.toFixed(6) + '° (' + dmsLon + ')<br>' +
-            '<b>UTM 44N:</b> E ' + utm.easting.toFixed(1) + ' &nbsp; N ' + utm.northing.toFixed(1) +
+            '<b>UTM ' + activeUtmZoneStr + ':</b> E ' + utm.easting.toFixed(1) + ' &nbsp; N ' + utm.northing.toFixed(1) +
           '</div>' +
-          '<div class="pin-nearest-info">' + nearestHtml + '</div>' +
-          '<div class="pin-popup-actions">' +
-            '<button type="button" class="pin-action-btn copy" onclick="copyPinCoords(this)">📋 Copy</button>' +
-            '<button type="button" class="pin-action-btn clear" onclick="clearPin()">✕ Clear Pin</button>' +
+          '<div class=\"pin-nearest-info\">' + nearestHtml + '</div>' +
+          '<div class=\"pin-popup-actions\">' +
+            '<button type=\"button\" class=\"pin-action-btn copy\" onclick=\"copyPinCoords(this)\">📋 Copy</button>' +
+            '<button type=\"button\" class=\"pin-action-btn clear\" onclick=\"clearPin()\">✕ Clear Pin</button>' +
           '</div>' +
         '</div>';
 
@@ -1105,13 +1189,13 @@
         currentPinMarker.getPopup().setContent(popupContent);
         currentPinMarker.openPopup();
       } else {
-        const pinSvg = '<svg width="28" height="36" viewBox="0 0 24 32" fill="none" xmlns="http://www.w3.org/2000/svg">' +
-          '<filter id="pinShadow" x="-20%" y="-10%" width="140%" height="130%">' +
-            '<feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#000" flood-opacity="0.4"/>' +
+        const pinSvg = '<svg width=\"28\" height=\"36\" viewBox=\"0 0 24 32\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\">' +
+          '<filter id=\"pinShadow\" x=\"-20%\" y=\"-10%\" width=\"140%\" height=\"130%\">' +
+            '<feDropShadow dx=\"0\" dy=\"2\" stdDeviation=\"2\" flood-color=\"#000\" flood-opacity=\"0.4\"/>' +
           '</filter>' +
-          '<path d="M12 0C5.37 0 0 5.37 0 12C0 21 12 32 12 32C12 32 24 21 24 12C24 5.37 18.63 0 12 0Z" fill="#dc2626" filter="url(#pinShadow)"/>' +
-          '<circle cx="12" cy="11" r="5" fill="#ffffff"/>' +
-          '<circle cx="12" cy="11" r="2.5" fill="#dc2626"/>' +
+          '<path d=\"M12 0C5.37 0 0 5.37 0 12C0 21 12 32 12 32C12 32 24 21 24 12C24 5.37 18.63 0 12 0Z\" fill=\"#dc2626\" filter=\"url(#pinShadow)\"/>' +
+          '<circle cx=\"12\" cy=\"11\" r=\"5\" fill=\"#ffffff\"/>' +
+          '<circle cx=\"12\" cy=\"11\" r=\"2.5\" fill=\"#dc2626\"/>' +
         '</svg>';
 
         const pinIcon = L.divIcon({
@@ -1125,13 +1209,9 @@
         currentPinMarker = L.marker([lat, lon], { icon: pinIcon }).addTo(map);
         currentPinMarker.bindPopup(popupContent, { maxWidth: 300 });
         currentPinMarker.openPopup();
-
-        currentPinMarker.on('click', function() {
-          currentPinMarker.openPopup();
-        });
       }
 
-      // Update Google Maps Pin
+      // Update Google Pin
       if (googleMap) {
         if (googlePinMarker) {
           googlePinMarker.setPosition({ lat: lat, lng: lon });
@@ -1143,26 +1223,19 @@
             map: googleMap,
             zIndex: 200,
             icon: {
-              url: 'data:image/svg+xml;utf-8,' + encodeURIComponent('<svg width="28" height="36" viewBox="0 0 24 32" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 0C5.37 0 0 5.37 0 12C0 21 12 32 12 32C12 32 24 21 24 12C24 5.37 18.63 0 12 0Z" fill="#dc2626"/><circle cx="12" cy="11" r="5" fill="#ffffff"/><circle cx="12" cy="11" r="2.5" fill="#dc2626"/></svg>'),
+              url: 'data:image/svg+xml;utf-8,' + encodeURIComponent('<svg width=\"28\" height=\"36\" viewBox=\"0 0 24 32\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M12 0C5.37 0 0 5.37 0 12C0 21 12 32 12 32C12 32 24 21 24 12C24 5.37 18.63 0 12 0Z\" fill=\"#dc2626\"/><circle cx=\"12\" cy=\"11\" r=\"5\" fill=\"#ffffff\"/><circle cx=\"12\" cy=\"11\" r=\"2.5\" fill=\"#dc2626\"/></svg>'),
               scaledSize: new google.maps.Size(28, 36),
               anchor: new google.maps.Point(14, 36)
             }
           });
-          googleInfoWindow = new google.maps.InfoWindow({
-            content: popupContent,
-            maxWidth: 300
-          });
-          googlePinMarker.addListener('click', function() {
-            googleInfoWindow.open(googleMap, googlePinMarker);
-          });
+          googleInfoWindow = new google.maps.InfoWindow({ content: popupContent, maxWidth: 300 });
+          googlePinMarker.addListener('click', () => googleInfoWindow.open(googleMap, googlePinMarker));
           googleInfoWindow.open(googleMap, googlePinMarker);
         }
       }
     }
 
-    map.on('click', function(e) {
-      setPin(e.latlng.lat, e.latlng.lng);
-    });
+    map.on('click', function(e) { setPin(e.latlng.lat, e.latlng.lng); });
 
     window.clearPin = function() {
       if (currentPinMarker) {
@@ -1173,60 +1246,48 @@
         googlePinMarker.setMap(null);
         googlePinMarker = null;
       }
-      if (googleInfoWindow) {
-        googleInfoWindow.close();
-      }
+      if (googleInfoWindow) googleInfoWindow.close();
       isPinned = false;
       pinnedLat = null;
       pinnedLon = null;
-      coordBar.innerHTML = '<span class="coord-prompt">Move the pointer over the map</span>';
+      coordBar.innerHTML = '<span class=\"coord-prompt\">Move the pointer over the map</span>';
     };
 
     window.copyPinCoords = function(btn) {
-      const text = latestPinCopyStr;
-      if (!text) return;
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(text).then(showSuccess).catch(fallback);
-      } else {
-        fallback();
-      }
-      function fallback() {
-        const ta = document.createElement('textarea');
-        ta.value = text;
-        ta.style.position = 'fixed';
-        ta.style.opacity = '0';
-        document.body.appendChild(ta);
-        ta.select();
-        try {
-          document.execCommand('copy');
-          showSuccess();
-        } catch (err) {
-          alert('Coordinates: ' + text);
-        }
-        document.body.removeChild(ta);
-      }
-      function showSuccess() {
-        if (btn) {
-          const originalText = btn.innerHTML;
-          btn.innerHTML = '✓ Copied!';
-          btn.style.background = '#16a34a';
-          setTimeout(() => {
-            btn.innerHTML = originalText;
-            btn.style.background = '#2563eb';
-          }, 1500);
-        }
-      }
+      if (!latestPinCopyStr) return;
+      navigator.clipboard.writeText(latestPinCopyStr).then(() => {
+        const orig = btn.textContent;
+        btn.textContent = '✓ Copied!';
+        btn.style.background = '#16a34a';
+        setTimeout(() => { btn.textContent = orig; btn.style.background = '#2563eb'; }, 1500);
+      }).catch(() => alert(latestPinCopyStr));
     };
 
-    // ==========================================
-    // Google Maps Integration & Basemap Switcher
-    // ==========================================
+    // 8. GeoJSON Export Function
+    window.exportGeoJSON = function() {
+      if (!activeLakeGeoJSON && !window.cachedLakeGeoJSON) return;
+      const data = activeLakeGeoJSON || window.cachedLakeGeoJSON;
+      const jsonStr = JSON.stringify(data, null, 2);
+      const blob = new Blob([jsonStr], { type: 'application/geo+json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      const lakeName = (data.facts && data.facts.lake_name) ? data.facts.lake_name : (data.name || 'lake');
+      const safeName = lakeName.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '');
+      a.download = `${safeName}_${data.lake_id || activeLakeId}.geojson`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    };
+
+    // 9. Google Maps Integration & Basemap Switcher
     let googleMap = null;
-    let currentBasemap = 'esri';
+    let currentBasemap = 'osm';
 
     function switchBasemap(choice) {
       currentBasemap = choice;
-      localStorage.setItem('lake_871_basemap', choice);
+      localStorage.setItem('hmda_lake_basemap', choice);
 
       const radio = document.querySelector(`input[name="basemap-select"][value="${choice}"]`);
       if (radio) radio.checked = true;
@@ -1235,10 +1296,7 @@
       const gmapDiv = document.getElementById('google-map');
 
       if (choice === 'google-satellite' || choice === 'google-hybrid') {
-        if (!googleMap) {
-          console.warn("Google Maps is not initialized yet.");
-          return;
-        }
+        if (!googleMap) return;
         const center = map.getCenter();
         const zoom = map.getZoom();
 
@@ -1271,36 +1329,18 @@
     }
 
     function loadGeoJSONToGoogleMap(geojson) {
-      if (!googleMap) return;
-
+      if (!googleMap || !geojson) return;
+      googleMap.data.forEach(feature => googleMap.data.remove(feature));
       googleMap.data.addGeoJson(geojson);
 
       googleMap.data.setStyle(function(feature) {
         const layer = feature.getProperty('layer');
-
         if (layer === 'boundary') {
-          return {
-            strokeColor: '#ff6b00',
-            strokeWeight: 3.5,
-            strokeOpacity: 1.0,
-            zIndex: 5
-          };
+          return { strokeColor: '#ff6b00', strokeWeight: 3.5, strokeOpacity: 1.0, zIndex: 5 };
         } else if (layer === 'bund') {
-          return {
-            strokeColor: '#8d5524',
-            strokeWeight: 3.0,
-            strokeOpacity: 0.95,
-            zIndex: 4
-          };
+          return { strokeColor: '#8d5524', strokeWeight: 3.0, strokeOpacity: 0.95, zIndex: 4 };
         } else if (layer === 'buffer') {
-          return {
-            fillColor: '#39ff14',
-            fillOpacity: 0.35,
-            strokeColor: '#00c853',
-            strokeWeight: 2.0,
-            strokeOpacity: 1.0,
-            zIndex: 2
-          };
+          return { fillColor: '#39ff14', fillOpacity: 0.35, strokeColor: '#00c853', strokeWeight: 2.0, strokeOpacity: 1.0, zIndex: 2 };
         } else if (layer === 'point') {
           return {
             icon: {
@@ -1315,62 +1355,6 @@
           };
         }
       });
-
-      // Add clickable markers & popups on Google Maps Data features
-      googleMap.data.addListener('click', function(event) {
-        const layer = event.feature.getProperty('layer');
-        if (layer === 'point') {
-          const pt = event.feature.getProperty('point');
-          const lat = event.latLng.lat();
-          const lon = event.latLng.lng();
-          const latDms = event.feature.getProperty('latDms');
-          const lonDms = event.feature.getProperty('lonDms');
-          const note = event.feature.getProperty('note');
-          
-          const content = `
-            <div style="font-family: sans-serif; font-size: 13px; color: #111;">
-              <strong style="color: #0284c7; font-size: 14px;">Point ${pt}</strong><br>
-              <b>Lat:</b> ${latDms}<br>
-              <b>Lon:</b> ${lonDms}<br>
-              <b>DD:</b> ${lat.toFixed(6)}°, ${lon.toFixed(6)}°
-              ${note ? `<br><small style="color: #b45309;">${note}</small>` : ''}
-            </div>
-          `;
-          if (!window.gPointInfoWindow) {
-            window.gPointInfoWindow = new google.maps.InfoWindow();
-          }
-          window.gPointInfoWindow.setContent(content);
-          window.gPointInfoWindow.setPosition(event.latLng);
-          window.gPointInfoWindow.open(googleMap);
-        } else {
-          setPin(event.latLng.lat(), event.latLng.lng());
-        }
-      });
-
-      // Bund dashed line representation on Google Maps
-      if (latlngs.length >= 2) {
-        new google.maps.Polyline({
-          path: [
-            { lat: latlngs[latlngs.length - 1][0], lng: latlngs[latlngs.length - 1][1] },
-            { lat: latlngs[0][0], lng: latlngs[0][1] }
-          ],
-          strokeColor: '#8d5524',
-          strokeOpacity: 0,
-          icons: [{
-            icon: {
-              path: 'M 0,-1 0,1',
-              strokeOpacity: 1,
-              strokeColor: '#8d5524',
-              strokeWeight: 3,
-              scale: 3
-            },
-            offset: '0',
-            repeat: '12px'
-          }],
-          map: googleMap,
-          zIndex: 4
-        });
-      }
     }
 
     function initGoogleMapInstance() {
@@ -1383,58 +1367,41 @@
         fullscreenControl: false,
         streetViewControl: false,
         zoomControl: true,
-        zoomControlOptions: {
-          position: google.maps.ControlPosition.LEFT_TOP
-        }
+        zoomControlOptions: { position: google.maps.ControlPosition.LEFT_TOP }
       });
 
       googleMap.addListener('mousemove', function(e) {
-        pointerOverMap = true;
-        if (!isPinned) {
-          renderCoordinateBar(e.latLng.lat(), e.latLng.lng(), false);
-        }
+        if (!isPinned) renderCoordinateBar(e.latLng.lat(), e.latLng.lng(), false);
       });
 
       gmapDiv.addEventListener('mouseleave', function() {
-        pointerOverMap = false;
-        if (!isPinned) {
-          coordBar.innerHTML = '<span class="coord-prompt">Move the pointer over the map</span>';
-        }
+        if (!isPinned) coordBar.innerHTML = '<span class=\"coord-prompt\">Move the pointer over the map</span>';
       });
 
       googleMap.addListener('click', function(e) {
         setPin(e.latLng.lat(), e.latLng.lng());
       });
 
-      if (window.cachedLakeGeoJSON) {
-        loadGeoJSONToGoogleMap(window.cachedLakeGeoJSON);
-      }
+      if (activeLakeGeoJSON) loadGeoJSONToGoogleMap(activeLakeGeoJSON);
     }
 
-    // Attempt to load Google Maps JS API if key is present
     function setupGoogleMaps() {
       if (typeof GOOGLE_MAPS_KEY === 'undefined' || !GOOGLE_MAPS_KEY || GOOGLE_MAPS_KEY.trim() === '') {
-        console.log("No GOOGLE_MAPS_KEY found in config.js. Google Satellite basemap hidden.");
         return;
       }
 
       window.gm_authFailure = function() {
-        console.warn("Google Maps API authentication failed. Reverting to Esri World Imagery.");
         document.getElementById('opt-google-satellite').style.display = 'none';
         document.getElementById('opt-google-hybrid').style.display = 'none';
-        if (currentBasemap.startsWith('google-')) {
-          switchBasemap('esri');
-        }
+        if (currentBasemap.startsWith('google-')) switchBasemap('osm');
       };
 
       window.onGoogleMapsReady = function() {
         document.getElementById('opt-google-satellite').style.display = 'flex';
         document.getElementById('opt-google-hybrid').style.display = 'flex';
-
         initGoogleMapInstance();
 
-        // Restore user choice from localStorage
-        const savedChoice = localStorage.getItem('lake_871_basemap');
+        const savedChoice = localStorage.getItem('hmda_lake_basemap');
         if (savedChoice === 'google-satellite' || savedChoice === 'google-hybrid') {
           switchBasemap(savedChoice);
         }
@@ -1445,23 +1412,21 @@
       script.async = true;
       script.defer = true;
       script.onerror = function() {
-        console.warn("Failed to load Google Maps script. Falling back to Esri.");
         document.getElementById('opt-google-satellite').style.display = 'none';
         document.getElementById('opt-google-hybrid').style.display = 'none';
       };
       document.head.appendChild(script);
     }
 
-    // Initialize switcher on load (OpenStreetMap default)
-    const savedBasemap = localStorage.getItem('lake_871_basemap');
+    // Initialize Page & Load Active Lake
+    const savedBasemap = localStorage.getItem('hmda_lake_basemap');
     if (savedBasemap === 'esri') {
       switchBasemap('esri');
-    } else if (savedBasemap === 'google-satellite' || savedBasemap === 'google-hybrid') {
-      switchBasemap('osm');
     } else {
       switchBasemap('osm');
     }
 
+    loadLakesCatalog();
     setupGoogleMaps();
   </script>
 </body>
