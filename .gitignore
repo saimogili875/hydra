@@ -4,3 +4,5 @@ logs/
 __pycache__/
 *.py[cod]
 .pytest_cache/
+config.js
+data/tiles_cache/

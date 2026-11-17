@@ -8,3 +8,5 @@ pillow
 pymupdf
 numpy
 pytest
+matplotlib
+requests

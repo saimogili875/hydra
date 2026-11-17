@@ -1,0 +1,28 @@
+{
+  "lake_name": "YELAMERU KUNTA",
+  "lake_id": "871",
+  "survey_date": "20-08-2014",
+  "ftl_level_m": "+588.350m",
+  "points_count": 37,
+  "area": {
+    "pdf_acres": 16.152,
+    "computed_acres": 16.6266,
+    "diff_acres": 0.4746,
+    "diff_percent": 2.94,
+    "status": "OK"
+  },
+  "perimeter": {
+    "pdf_m": 1411.706,
+    "computed_m": 1392.84,
+    "diff_m": -18.866,
+    "diff_percent": -1.34,
+    "status": "OK"
+  },
+  "bund": {
+    "pdf_length_m": 475.0,
+    "straight_chord_m": 449.364,
+    "note": "Straight chord A37->A1 (449.4 m) approximates the curved bund shown in the survey drawing (CH:0 to CH:475 = 475 m). This causes a minor +2.9% area difference, well within tolerance."
+  },
+  "overall_status": "OK",
+  "disclaimer": "Student project. Not a legal boundary."
+}
